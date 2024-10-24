@@ -25,6 +25,7 @@ class IconViewer(QWidget):
         
     def populate_file_list(self, directory):
         # Create a QDir object for the specified directory
+        self.model.clear()
         dir = QDir(directory)
 
         # Check if the directory exists

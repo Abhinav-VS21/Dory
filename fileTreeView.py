@@ -1,38 +1,49 @@
-from PySide6.QtCore import QDir , QTimer
-from PySide6.QtWidgets import QApplication , QWidget , QFileSystemModel 
-import sys 
-from fileTreeView_ui import Ui_fileTreeViewWidget
-
+from PySide6.QtWidgets import QWidget ,QFileSystemModel, QTreeView , QVBoxLayout , QHeaderView
+from PySide6.QtCore  import QDir, QTimer, Qt
 
 
 class FileTreeViewWidget(QWidget):
-    def __init__(self):
+    def __init__(self , maxColumnWidth = 300):
         super().__init__()
         self.setWindowTitle("File Tree View")
+        self.maxColumnWidth = maxColumnWidth
         
-        # ui object that displays the file tree view
-        self.fileTreeUI = Ui_fileTreeViewWidget()         
-        self.fileTreeUI.setupUi(self)
-            
-        
-        # initilizing file system model with user directory
         self.fileSystemModel = QFileSystemModel()
+        self.homeDirectory = QDir.homePath()  #change this for root directory
         
-        self.homeDirectory = QDir.homePath()
-        self.fileSystemModel.setRootPath(self.homeDirectory)   # setting the root path of the model to the user directory
+        self.fileSystemModel.setRootPath(self.homeDirectory)
+        
+        self.fileTreeView = QTreeView(self)
+        self.fileTreeView.setModel(self.fileSystemModel)
+        self.fileTreeView.setRootIndex(self.fileSystemModel.index(self.homeDirectory))
 
-        # setting the model to the tree view with the index as user directory
-        self.fileTreeUI.fileTreeView.setModel(self.fileSystemModel)
-        self.fileTreeUI.fileTreeView.setRootIndex(self.fileSystemModel.index(self.homeDirectory))
+        
+        self.fileTreeView.hideColumn(1)
+        self.fileTreeView.hideColumn(2)
+        self.fileTreeView.hideColumn(3)
+        
+        
+        header = self.fileTreeView.header()
+        
+        # Disable user resizing
+        header.setSectionsMovable(False)  # Prevents dragging columns
+        header.setStretchLastSection(False)  # Prevents automatic stretching of the last column
+        
+        
+        vLayout = QVBoxLayout(self)
+        vLayout.addWidget(self.fileTreeView)
+        self.setLayout(vLayout)
+        
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        
+        
+        # signal for clicking directory 
+        
+        
+        
+        
+        
+        
+        
+        
 
-        # connect the clicked signal slot to the custom slot 
-
-        self.fileTreeUI.fileTreeView.expanded.connect(self.resizeNameColumn)
-        self.fileTreeUI.fileTreeView.collapsed.connect(self.resizeNameColumn)
-
-    def resizeNameColumn(self):
-        QTimer.singleShot(1, lambda: self.resizeColumn(0))
-
-    def resizeColumn(self, index):
-        self.fileTreeUI.fileTreeView.resizeColumnToContents(index)
-    
