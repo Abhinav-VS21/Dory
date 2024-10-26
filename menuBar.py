@@ -1,7 +1,13 @@
-from PySide6.QtWidgets import QMenuBar, QFileDialog, QMessageBox, QApplication
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenuBar, QFileDialog, QMessageBox, QApplication 
+from PySide6.QtGui import QAction 
+from PySide6.QtCore import Signal
 
 class MenuBar(QMenuBar):
+    
+    # Defining View Signals
+    switch_to_icon_mode_signal = Signal()
+    switch_to_list_mode_signal = Signal()
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.init_menu()
@@ -27,7 +33,7 @@ class MenuBar(QMenuBar):
         file_menu.addAction(exit_action)
 
         # Connect File Menu Actions
-        new_file_action.triggered.connect(self.new_file)
+        
         new_folder_action.triggered.connect(self.new_folder)
         open_action.triggered.connect(self.open_file)
         rename_action.triggered.connect(self.rename_item)
@@ -68,6 +74,7 @@ class MenuBar(QMenuBar):
         icon_mode_action.triggered.connect(self.switch_to_icon_mode)
         list_mode_action.triggered.connect(self.switch_to_list_mode)
         refresh_action.triggered.connect(self.refresh_view)
+        
         
         # Navigate Menu
     
@@ -117,8 +124,6 @@ class MenuBar(QMenuBar):
         about_action.triggered.connect(self.show_about_dialog)
 
     # File Menu Actions
-    def new_file(self):
-        print("New File Created")
 
     def new_folder(self):
         print("New Folder Created")
@@ -153,10 +158,11 @@ class MenuBar(QMenuBar):
 
     # View Menu Actions
     def switch_to_icon_mode(self):
-        print("Switched to Icon Mode")
+        self.switch_to_icon_mode_signal.emit()
+        
 
     def switch_to_list_mode(self):
-        print("Switched to List Mode")
+        self.switch_to_list_mode_signal.emit()
 
     def refresh_view(self):
         print("View Refreshed")
@@ -193,8 +199,8 @@ class MenuBar(QMenuBar):
 
 
 
-# for debugging
-app = QApplication([])
-menu_bar = MenuBar()
-menu_bar.show()
-app.exec()
+# # for debugging
+# app = QApplication([])
+# menu_bar = MenuBar()
+# menu_bar.show()
+# app.exec()

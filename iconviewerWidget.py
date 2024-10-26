@@ -8,7 +8,7 @@ from customFileSystemModel import CustomFileSystemModel
 
 
 
-class IconViewer(QWidget):
+class IconListViewerWidget(QWidget):
     def __init__(self, directory="/home/MissShah_21"):
         super().__init__()
         #verifing the directory
@@ -35,16 +35,19 @@ class IconViewer(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.icon_list_view)
 
-        # Configure the view to show icons
-        #self.icon_list_view.setViewMode(QListView.IconMode)  # Switch to icon view mode
-        self.icon_list_view.setSpacing(5)  # Add some spacing between items
-        
         
     def setNewRootIndex(self , directory):
         newRootIndex = self.model.index(directory)
         self.icon_list_view.setRootIndex(newRootIndex)
         print('The new root index is set to: ',newRootIndex)
-
+        
+    def setIconView(self):
+        self.icon_list_view.setViewMode(QListView.IconMode)
+        self.icon_list_view.setSpacing(5)          
+        
+    def setListView(self):
+        self.icon_list_view.setViewMode(QListView.ListMode)
+        self.icon_list_view.setSpacing(5)  
 
 
 '''debugging'''
