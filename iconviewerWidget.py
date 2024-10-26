@@ -50,10 +50,11 @@ class IconListViewerWidget(QWidget):
         self.icon_list_view.setSpacing(5)  
         
     def refreshView(self):
-        current_directory = self.icon_list_view.rootIndex()
-        self.icon_list_view.setRootIndex(current_directory)
+        current_dir_path= self.getCurrentDirectoryPath()
+        self.icon_list_view.setRootIndex(self.model.index(current_dir_path))
         
-
+    def getCurrentDirectoryPath(self):
+        return self.model.filePath(self.icon_list_view.rootIndex())
 
 '''debugging'''
 # app = QApplication(sys.argv)

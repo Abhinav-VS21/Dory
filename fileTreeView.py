@@ -7,11 +7,10 @@ class FileTreeViewWidget(QWidget):
     def __init__(self ,directory = QDir.homePath()): 
         super().__init__()
         self.setWindowTitle("File Tree View")
+        directory = QDir.homePath()  #change this for root directory
         
         
         self.file_system_model = CustomFileSystemModel()
-        directory = QDir.homePath()  #change this for root directory
-        
         self.file_system_model.setRootPath(directory)
         
         self.file_tree_view = QTreeView(self)
@@ -39,6 +38,9 @@ class FileTreeViewWidget(QWidget):
         
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
+    def refreshView(self):
+        current_directory = self.getCurrentDirectory()
+        self.file_tree_view.setRootIndex(current_directory)
         
         
         

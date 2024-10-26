@@ -70,7 +70,13 @@ class MainWindow(QMainWindow):
             print('Opening file: ',self.file_tree_view_widget.file_system_model.filePath(index_item))
         
         # opening the file code goes here
-        
+    
+    def getCurrentDirectory(self):
+        return self.icon_list_viewer_widget.getCurrentDirectoryPath()
+    
+    def refreshView(self):
+        self.icon_list_viewer_widget.refreshView()
+        self.file_tree_view_widget.refreshView()
 
 app = QApplication([])
 window = MainWindow()
