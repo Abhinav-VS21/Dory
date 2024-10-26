@@ -7,6 +7,7 @@ class MenuBar(QMenuBar):
     # Defining View Signals
     switch_to_icon_mode_signal = Signal()
     switch_to_list_mode_signal = Signal()
+    refresh_view_signal = Signal()
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -165,6 +166,7 @@ class MenuBar(QMenuBar):
         self.switch_to_list_mode_signal.emit()
 
     def refresh_view(self):
+        self.refresh_view_signal.emit()
         print("View Refreshed")
 
     # Navigate Menu Actions

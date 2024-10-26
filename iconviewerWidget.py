@@ -48,6 +48,11 @@ class IconListViewerWidget(QWidget):
     def setListView(self):
         self.icon_list_view.setViewMode(QListView.ListMode)
         self.icon_list_view.setSpacing(5)  
+        
+    def refreshView(self):
+        current_directory = self.icon_list_view.rootIndex()
+        self.icon_list_view.setRootIndex(current_directory)
+        
 
 
 '''debugging'''

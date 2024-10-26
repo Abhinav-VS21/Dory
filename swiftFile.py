@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
     # Connection View MenuBar
         self.menu_bar.switch_to_icon_mode_signal.connect(self.icon_list_viewer_widget.setIconView)
         self.menu_bar.switch_to_list_mode_signal.connect(self.icon_list_viewer_widget.setListView)
-    
+        self.menu_bar.refresh_view_signal.connect(self.icon_list_viewer_widget.refreshView)
     
     
     
