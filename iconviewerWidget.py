@@ -51,6 +51,6 @@ class IconViewer(QWidget):
 # app = QApplication(sys.argv)
 # icon_viewer = IconViewer()
 # icon_viewer.setWindowTitle('Icon Viewer')
-# icon_viewer.resize(400, 300)
+# icon_viewer.resize(400, 30    0)
 # icon_viewer.show()
 # app.exec()

@@ -23,6 +23,8 @@ class FileTreeViewWidget(QWidget):
         self.file_tree_view.hideColumn(2)
         self.file_tree_view.hideColumn(3)
         
+        self.file_system_model.setFilter( QDir.NoDotAndDotDot | QDir.AllDirs)  
+
         
         header = self.file_tree_view.header()
         
