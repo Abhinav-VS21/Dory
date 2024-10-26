@@ -1,45 +1,56 @@
 import sys
+import os
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QListView , QApplication , QMainWindow
-from PySide6.QtGui import QStandardItemModel, QIcon , QStandardItem
-from PySide6.QtCore import Qt , QDir
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QListView , QApplication , QMainWindow , QFileSystemModel
+from PySide6.QtGui import  QIcon , QStandardItemModel
+from PySide6.QtCore import QDir , QTimer
+from customFileSystemModel import CustomFileSystemModel
+
 
 
 class IconViewer(QWidget):
-    def __init__(self, directory):
+    def __init__(self, directory="/home/MissShah_21"):
         super().__init__()
-        self.layout = QVBoxLayout(self)
+        #verifing the directory
+        print(f"Directory exists: {os.path.exists(directory)}")
 
-        # Create a list view to show icons
-        self.icon_view = QListView(self)
-        self.layout.addWidget(self.icon_view)
-
+        
         # Set up the model for the QListView
-        self.model = QStandardItemModel(self.icon_view)
-        self.icon_view.setModel(self.model)
-
-        # Populate the list view with icons from the specified directory
-        self.populate_file_list(directory)
+        self.model = CustomFileSystemModel()
+        self.model.setRootPath(directory)
+        self.model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
         
+        # Create a list view to show icons
+        self.icon_list_view = QListView(self)
+        self.icon_list_view.setModel(self.model)
 
+        # Set the root index for the directory
+        root_index = self.model.index(directory)
+        self.icon_list_view.setRootIndex(root_index)
+
+        # Debugging: Print the number of items in the directory
+        item_count = self.model.rowCount(root_index)
+        print(f"Number of items in '{directory}': {item_count}")
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.icon_list_view)
+
+        # Configure the view to show icons
+        #self.icon_list_view.setViewMode(QListView.IconMode)  # Switch to icon view mode
+        self.icon_list_view.setSpacing(5)  # Add some spacing between items
         
-    def populate_file_list(self, directory):
-        # Create a QDir object for the specified directory
-        self.model.clear()
-        dir = QDir(directory)
+        
+    def setNewRootIndex(self , directory):
+        newRootIndex = self.model.index(directory)
+        self.icon_list_view.setRootIndex(newRootIndex)
+        print('The new root index is set to: ',newRootIndex)
 
-        # Check if the directory exists
-        if dir.exists():
-            # Get a list of all files in the directory
-            file_info = dir.entryInfoList(QDir.Files | QDir.NoDotAndDotDot)
 
-            # Populate the model with the file names and icons
-            for info in file_info:
-                item = QStandardItem(QIcon(info.filePath()), info.fileName())
-                item.setEditable(False)  # Make items non-editable
-                self.model.appendRow(item)
-        else:
-            print(f"The directory '{directory}' does not exist.")
-      
-            
-       
+
+'''debugging'''
+# app = QApplication(sys.argv)
+# icon_viewer = IconViewer()
+# icon_viewer.setWindowTitle('Icon Viewer')
+# icon_viewer.resize(400, 300)
+# icon_viewer.show()
+# app.exec()
