@@ -37,7 +37,12 @@ class IconListViewerWidget(QWidget):
 
         
     def setNewRootIndex(self , directory):
+        print('Setting new root index to: ',directory)  
         newRootIndex = self.model.index(directory)
+        if not newRootIndex.isValid():
+            print('The new root index is not valid')
+            return
+        
         self.icon_list_view.setRootIndex(newRootIndex)
         print('The new root index is set to: ',newRootIndex)
         

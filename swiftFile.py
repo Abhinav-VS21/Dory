@@ -40,18 +40,16 @@ class MainWindow(QMainWindow):
         self.setMenuBar(self.menu_bar)
         
         
-    # Connecting FileTreeViewWidget and iconViewerWidget
+        # Connecting FileTreeViewWidget and iconViewerWidget
         self.file_tree_view_widget.file_tree_view.doubleClicked.connect(self.findFilePathOnItem)
     
-    # Connection View MenuBar
+        # Connection View MenuBar
         self.menu_bar.switch_to_icon_mode_signal.connect(self.icon_list_viewer_widget.setIconView)
         self.menu_bar.switch_to_list_mode_signal.connect(self.icon_list_viewer_widget.setListView)
         self.menu_bar.refresh_view_signal.connect(self.icon_list_viewer_widget.refreshView)
     
-    
-    
-    
-    
+        # Connection Tools MenuBar
+        self.menu_bar.switch_to_new_icon_list_root_index.connect(self.setNewIconListRootIndex)
     
     def findFilePathOnItem(self , model_index):
         
@@ -63,7 +61,7 @@ class MainWindow(QMainWindow):
         
         # Update the icon viewer to show the contents of the selected directory or file
         if self.file_tree_view_widget.file_system_model.isDir(index_item):
-            self.icon_list_viewer_widget.setNewRootIndex(file_path)  
+            self.setNewIconListRootIndex(file_path)  
             print('Navigating to directory: ',self.file_tree_view_widget.file_system_model.filePath(index_item))
             
         else:
@@ -77,6 +75,15 @@ class MainWindow(QMainWindow):
     def refreshView(self):
         self.icon_list_viewer_widget.refreshView()
         self.file_tree_view_widget.refreshView()
+        
+    def setNewIconListRootIndex(self , parent_folder_path) :
+        self.icon_list_viewer_widget.setNewRootIndex(parent_folder_path)
+        self.expandFileTreeView(parent_folder_path)
+    
+        
+    def expandFileTreeView(self , directory):
+        self.file_tree_view_widget.expandTreeView(directory)
+        
 
 app = QApplication([])
 window = MainWindow()

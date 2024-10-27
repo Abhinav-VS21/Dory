@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMenuBar, QInputDialog, QMessageBox, QApplication, QDialog , QVBoxLayout , QListWidget
 from PySide6.QtGui import QAction 
 from PySide6.QtCore import Signal
+from searchDialog import SearchDialog
 import os
 
 class MenuBar(QMenuBar):
@@ -11,6 +12,8 @@ class MenuBar(QMenuBar):
     # Defining View Signals
     switch_to_icon_mode_signal = Signal()
     switch_to_list_mode_signal = Signal()
+    
+    switch_to_new_icon_list_root_index = Signal(str)   
     
     
     # Defining Tools Signals
@@ -157,66 +160,13 @@ class MenuBar(QMenuBar):
     # Tools Menu Actions
     def openSearchDialog(self):
         print("Opened Search Dialog")
-        self.search_files()
-
-    def get_search_parameters(self):
-        # Get search directory
-        search_directory = QInputDialog.getText(self, "Search Directory", "Enter directory to search:")
-        
-        # Get file name
-        file_name = QInputDialog.getText(self, "File Name", "Enter file name to search:")
-        
-        # Get case sensitivity option
-        case_sensitive = QInputDialog.getItem(self, "Case Sensitivity", "Case Sensitive:", ["Yes", "No"], 0, False)
-        
-        ignore_extension = QInputDialog.getItem(self, "Ignore Extension", "Ignore File Extension:", ["Yes", "No"], 0, False)
-
-        return search_directory[0], file_name[0], case_sensitive == "Yes", ignore_extension == "Yes"
+        search_dialog = SearchDialog()
+        search_dialog.select_parent_folder_path.connect(self.setNewIconListRootIndex)
+        search_dialog.exec()
     
-    def search_files(self):
-        search_directory, file_name, case_sensitive, ignore_extension = self.get_search_parameters()
+    def setNewIconListRootIndex(self , directory):
+        self.switch_to_new_icon_list_root_index.emit(directory)
         
-        if not os.path.isdir(search_directory):
-            QMessageBox.warning(self, "Warning", "Invalid directory.")
-            return
-
-        results = []
-        
-        for root, dirs, files in os.walk(search_directory):
-            for name in files:
-                # Adjust matching based on options
-                base_name, ext = os.path.splitext(name)
-                if ignore_extension:
-                    match_name = base_name
-                else:
-                    match_name = name
-
-                if case_sensitive:
-                    if file_name in match_name:
-                        results.append(os.path.join(root, name))
-                else:
-                    if file_name.lower() in match_name.lower():
-                        results.append(os.path.join(root, name))
-
-        if results:
-            self.display_results(results)
-        else:
-            QMessageBox.information(self, "No Results", "No matching files found.")
-            
-    def display_results(self, results):
-        result_dialog = QDialog(self)
-        result_dialog.setWindowTitle("Search Results")
-        layout = QVBoxLayout(result_dialog)
-
-        list_widget = QListWidget(result_dialog)
-        layout.addWidget(list_widget)
-
-        for file in results:
-            list_widget.addItem(file)
-
-        result_dialog.setLayout(layout)
-        result_dialog.exec()
-
     def batchRename(self):
         print("Batch Rename")
 
