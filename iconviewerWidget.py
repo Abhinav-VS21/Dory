@@ -8,7 +8,7 @@ from customFileSystemModel import CustomFileSystemModel
 
 
 
-class IconViewer(QWidget):
+class IconListViewerWidget(QWidget):
     def __init__(self, directory="/home/MissShah_21"):
         super().__init__()
         #verifing the directory
@@ -35,22 +35,36 @@ class IconViewer(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.icon_list_view)
 
-        # Configure the view to show icons
-        #self.icon_list_view.setViewMode(QListView.IconMode)  # Switch to icon view mode
-        self.icon_list_view.setSpacing(5)  # Add some spacing between items
-        
         
     def setNewRootIndex(self , directory):
+        print('Setting new root index to: ',directory)  
         newRootIndex = self.model.index(directory)
+        if not newRootIndex.isValid():
+            print('The new root index is not valid')
+            return
+        
         self.icon_list_view.setRootIndex(newRootIndex)
         print('The new root index is set to: ',newRootIndex)
-
-
+        
+    def setIconView(self):
+        self.icon_list_view.setViewMode(QListView.IconMode)
+        self.icon_list_view.setSpacing(5)          
+        
+    def setListView(self):
+        self.icon_list_view.setViewMode(QListView.ListMode)
+        self.icon_list_view.setSpacing(5)  
+        
+    def refreshView(self):
+        current_dir_path= self.getCurrentDirectoryPath()
+        self.icon_list_view.setRootIndex(self.model.index(current_dir_path))
+        
+    def getCurrentDirectoryPath(self):
+        return self.model.filePath(self.icon_list_view.rootIndex())
 
 '''debugging'''
 # app = QApplication(sys.argv)
 # icon_viewer = IconViewer()
 # icon_viewer.setWindowTitle('Icon Viewer')
-# icon_viewer.resize(400, 300)
+# icon_viewer.resize(400, 30    0)
 # icon_viewer.show()
 # app.exec()
