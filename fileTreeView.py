@@ -5,11 +5,9 @@ import os
 
 
 class FileTreeViewWidget(QWidget):
-    def __init__(self ,root_directory = QDir.homePath()): 
+    def __init__(self ,root_directory = QDir.rootPath()): 
         super().__init__()
-        self.setWindowTitle("File Tree View")
-        root_directory = QDir.homePath()  #change this for root directory
-        
+        self.setWindowTitle("File Tree View")        
         
         self.file_system_model = CustomFileSystemModel()
         self.file_system_model.setRootPath(root_directory)
@@ -81,7 +79,8 @@ class FileTreeViewWidget(QWidget):
             index = self.file_system_model.index(path)
             self.file_tree_view.setExpanded(index, True)
 
-
+    def getCurrentDirectory(self):
+        return self.file_tree_view.rootIndex()
         
         
         

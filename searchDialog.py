@@ -2,8 +2,8 @@ from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLineEdit, QCheckBox, QPushButton, QApplication,
     QComboBox, QListWidget, QListWidgetItem, QHBoxLayout, QLabel, QProgressBar, QMessageBox , QApplication , QCompleter 
 )
-from PySide6.QtCore import Qt, QTimer, QThread, Signal, QObject, QStringListModel
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import  QThread, Signal, QStringListModel
+from DirectoryCompleter import DirectoryCompleter
 import os 
 
 class SearchThread(QThread):
@@ -80,15 +80,15 @@ class SearchDialog(QDialog):
         
         # Layouts
         layout = QVBoxLayout()
-        
+
         # Search Input
         self.search_dir_input = QLineEdit()
         self.search_dir_input.setPlaceholderText("Enter Directory to search ...")
         
         # Completer
-        self.completer = QCompleter()
-        self.search_dir_input.setCompleter(self.completer)
-        self.search_dir_input.textChanged.connect(self.updateCompleter)
+        self.completer = DirectoryCompleter(self.search_dir_input)
+        # self.search_dir_input.setCompleter(self.completer)
+        # self.search_dir_input.textChanged.connect(self.updateCompleter)
         
         # Search Name
         self.search_name_input = QLineEdit()
@@ -190,31 +190,6 @@ class SearchDialog(QDialog):
             
             print(f"Opening: {file_path}")
 
-    def updateCompleter(self):
-            # Get the current text from the QLineEdit
-            current_text = self.search_dir_input.text()
-
-            # Get the directory path to complete
-            if current_text:
-                directory = os.path.dirname(current_text) or '.'
-                prefix = os.path.basename(current_text)
-
-                # Get list of directories and files
-                try:
-                    # List all items in the directory
-                    items = os.listdir(directory)
-                    # Filter items based on the prefix
-                    filtered_items = [item for item in items if item.startswith(prefix)]
-                    # Create full paths
-                    full_paths = [os.path.join(directory, item) for item in filtered_items]
-                except FileNotFoundError:
-                    # Handle the case where the directory doesn't exist
-                    full_paths = []
-
-                full_paths.append(os.path.abspath('/home/MissShah_21/Pictures'))
-                # Set the model for the completer
-                self.completer.setModel(QStringListModel(full_paths))
-                self.completer.setCompletionMode(QCompleter.PopupCompletion)
 
 # Debugging
 # app = QApplication([])

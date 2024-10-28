@@ -8,7 +8,8 @@ from addressBar import AddressBar
 class MainWindow(QMainWindow): 
     def __init__(self):
         super().__init__()
-        
+        root_directory = QDir.homePath()
+        index_directory = QDir.homePath()
         self.central_widget = QWidget(self)
         
         
@@ -17,8 +18,8 @@ class MainWindow(QMainWindow):
         self.splitter.setOrientation(Qt.Horizontal)
         
         # adding the file tree view widget to the splitter
-        self.file_tree_view_widget = FileTreeViewWidget()        
-        self.icon_list_viewer_widget = IconListViewerWidget()
+        self.file_tree_view_widget = FileTreeViewWidget(root_directory)        
+        self.icon_list_viewer_widget = IconListViewerWidget(root_directory,index_directory)
         self.addressBar = AddressBar()
         
         
@@ -42,6 +43,9 @@ class MainWindow(QMainWindow):
         
         # Connecting FileTreeViewWidget and iconViewerWidget
         self.file_tree_view_widget.file_tree_view.doubleClicked.connect(self.findFilePathOnItem)
+        
+        # Qsplitter being used to resize the widgets
+        self.splitter.splitterMoved.connect(self.refreshView)
     
         # Connection View MenuBar
         self.menu_bar.switch_to_icon_mode_signal.connect(self.icon_list_viewer_widget.setIconView)
@@ -50,7 +54,11 @@ class MainWindow(QMainWindow):
     
         # Connection Tools MenuBar
         self.menu_bar.switch_to_new_icon_list_root_index.connect(self.setNewIconListRootIndex)
+        self.menu_bar.switch_to_new_icon_list_root_index.connect(self.expandFileTreeView)
     
+    
+    
+        
     def findFilePathOnItem(self , model_index):
         
         #returns the filePath of the selected item
@@ -61,7 +69,7 @@ class MainWindow(QMainWindow):
         
         # Update the icon viewer to show the contents of the selected directory or file
         if self.file_tree_view_widget.file_system_model.isDir(index_item):
-            self.setNewIconListRootIndex(file_path)  
+            self.setNewIconListRootIndex(file_path) 
             print('Navigating to directory: ',self.file_tree_view_widget.file_system_model.filePath(index_item))
             
         else:
@@ -78,7 +86,6 @@ class MainWindow(QMainWindow):
         
     def setNewIconListRootIndex(self , parent_folder_path) :
         self.icon_list_viewer_widget.setNewRootIndex(parent_folder_path)
-        self.expandFileTreeView(parent_folder_path)
     
         
     def expandFileTreeView(self , directory):

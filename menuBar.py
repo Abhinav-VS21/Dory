@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMenuBar, QInputDialog, QMessageBox, QApplication, QDialog , QVBoxLayout , QListWidget
 from PySide6.QtGui import QAction 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal , QDir
 from searchDialog import SearchDialog
 import os
 
@@ -13,16 +13,9 @@ class MenuBar(QMenuBar):
     switch_to_icon_mode_signal = Signal()
     switch_to_list_mode_signal = Signal()
     
+    # Defining switching directories to view signals
     switch_to_new_icon_list_root_index = Signal(str)   
     
-    
-    # Defining Tools Signals
-    open_search_dialog_signal = Signal()
-    batch_rename_signal = Signal()
-    open_properties_dialog_signal = Signal()
-    open_quick_access_signal = Signal()
-    create_bookmark_signal = Signal()
-    go_to_home_signal = Signal()
     
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -59,28 +52,38 @@ class MenuBar(QMenuBar):
 
         # Tools Menu
         tools_menu = self.addMenu("Tools")
+        
         search_action = QAction("Search", self)
-        batch_rename_action = QAction("Batch Rename", self)
-        properties_action = QAction("Properties", self)
-        quick_access_action = QAction("Quick Access", self)
         bookmark_action = QAction("Bookmark", self)
-        go_to_home_action = QAction("Home", self)
+        properties_action = QAction("Properties", self)
 
         tools_menu.addAction(search_action)
-        tools_menu.addAction(batch_rename_action)
-        tools_menu.addAction(properties_action)
-        tools_menu.addAction(quick_access_action)
         tools_menu.addAction(bookmark_action)
-        tools_menu.addAction(go_to_home_action)
-        
+        tools_menu.addAction(properties_action)
         
         # Connect Tools Menu Actions
         search_action.triggered.connect(self.openSearchDialog)
-        batch_rename_action.triggered.connect(self.batchRename)
         properties_action.triggered.connect(self.openPropertiesDialog)
-        quick_access_action.triggered.connect(self.openQuickAccess)
         bookmark_action.triggered.connect(self.createBookmark)
+        
+        
+        # QuickAccess Menu 
+        quick_access_menu = self.addMenu("Quick Access")
+        
+        go_to_home_action = QAction("Go to Home", self)
+        go_to_root_action = QAction("Go to Root", self)
+        
+        quick_access_menu.addAction(go_to_home_action)
+        quick_access_menu.addAction(go_to_root_action)
+        
+        bookmark_menu = quick_access_menu.addMenu("Bookmarks")
+        
+        # Connect QuickAccess Menu Actions
         go_to_home_action.triggered.connect(self.goToHome)
+        go_to_root_action.triggered.connect(self.goToRoot)
+        
+        
+        
         
         
         # Help Menu
@@ -167,21 +170,23 @@ class MenuBar(QMenuBar):
     def setNewIconListRootIndex(self , directory):
         self.switch_to_new_icon_list_root_index.emit(directory)
         
-    def batchRename(self):
-        print("Batch Rename")
-
     def openPropertiesDialog(self):
         print("Opened Properties Dialog")
         
-    def openQuickAccess(self):
-        print("Opened Quick Access")
-    
-    def createBookmark(self):
-        print("Created Bookmark")
+        
+    # Quick Access Menu Actions
     
     def goToHome(self):
-        print("Home")
-
+        print("Go to Home Action")
+        self.switch_to_new_icon_list_root_index.emit(QDir.homePath())
+        
+    def goToRoot(self):
+        print("Go to Root Action")
+        self.switch_to_new_icon_list_root_index.emit(QDir.rootPath())    
+    
+    def createBookmark(self):
+        pass
+    
     # Help Menu Actions
     def showAboutDialog(self):
         QMessageBox.about(self, "About", "File Explorer Application\nVersion 1.0")
