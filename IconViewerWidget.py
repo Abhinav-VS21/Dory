@@ -3,7 +3,7 @@ import os
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QListView , QApplication , QMainWindow , QFileSystemModel
 from PySide6.QtGui import  QIcon , QStandardItemModel
 from PySide6.QtCore import QDir , QTimer , Signal , QSize
-from customFileSystemModel import CustomFileSystemModel
+from customFileSystemModel import CustomDirectoryModel
 from WrappingItemDelegate import TextWrappingIconDelegate
 
 
@@ -17,7 +17,7 @@ class IconListViewerWidget(QWidget):
         super().__init__()
                
         
-        self.directory_model = CustomFileSystemModel()
+        self.directory_model = CustomDirectoryModel()
         self.directory_model.setRootPath(root_directory)
         self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
         

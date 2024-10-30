@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 
 # Override the model's data method to add a default icon
 
-class CustomFileSystemModel(QFileSystemModel):
+class CustomDirectoryModel(QFileSystemModel):
     
     def __init__(self, parent=None):
         super().__init__(parent)  # Initialize the base class

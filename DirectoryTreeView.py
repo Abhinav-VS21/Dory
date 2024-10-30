@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget , QTreeView , QVBoxLayout , QHeaderView , QApplication
 from PySide6.QtCore  import QDir, Signal
-from customFileSystemModel import CustomFileSystemModel
+from customFileSystemModel import CustomDirectoryModel
 import os
 
 
@@ -10,11 +10,11 @@ class DirectoryTreeView(QTreeView):
     file_double_clicked = Signal(str)
     folder_double_clicked = Signal(str)
     
-    def __init__(self ,root_directory = QDir.rootPath()): 
+    def __init__(self ,root_directory = QDir.homePath()): 
         super().__init__()
         self.setWindowTitle("File Tree View")        
         
-        self.file_system_model = CustomFileSystemModel()
+        self.file_system_model = CustomDirectoryModel()
         self.file_system_model.setRootPath(root_directory)
         
         self.setModel(self.file_system_model)
@@ -40,7 +40,7 @@ class DirectoryTreeView(QTreeView):
         
     # Defining the slots
     def refreshView(self):
-        current_directory = self.getCurrentDirectory()
+        current_directory = self.rootIndex()
         self.setRootIndex(current_directory)
         
     def traverseDirectoryTree(self , directory):
@@ -76,4 +76,4 @@ class DirectoryTreeView(QTreeView):
         else:
             self.folder_double_clicked.emit(file_path)
         
-        
+    

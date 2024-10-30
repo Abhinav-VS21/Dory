@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import QApplication , QMainWindow ,QWidget , QVBoxLayout , QSplitter , QTreeView , QMenuBar 
-from PySide6.QtCore import Qt , QTimer , QDir
-from fileTreeView import DirectoryTreeViewWidget
-from iconviewerWidget import IconListViewerWidget
+from PySide6.QtWidgets import QApplication , QMainWindow ,QWidget , QVBoxLayout , QSplitter
+from PySide6.QtCore import Qt , QDir
+from DirectoryTreeView import DirectoryTreeView
+from IconViewer import FileListViewer
 from menuBar import MenuBar
 from addressBar import AddressBar
 
@@ -18,19 +18,16 @@ class MainWindow(QMainWindow):
         self.splitter.setOrientation(Qt.Horizontal)
         
         # adding the file tree view widget to the splitter
-        self.directory_tree_view = DirectoryTreeViewWidget(root_directory)        
-        self.icon_list_viewer_widget = IconListViewerWidget(root_directory)
+        self.directory_tree_view = DirectoryTreeView()
+        self.file_list_viewer = FileListViewer(root_directory)
         self.addressBar = AddressBar()
-        
-        # Customizing the DirectoryTreeViewWidget
-        self.directory_tree_view.setRootIsDecorated(True)
-        
+                
         self.setCentralWidget(self.central_widget)
         self.v_layout = QVBoxLayout(self.central_widget)
         self.v_layout.addWidget(self.addressBar)
         self.v_layout.addWidget(self.splitter)
         self.splitter.addWidget(self.directory_tree_view)
-        self.splitter.addWidget(self.icon_list_viewer_widget)
+        self.splitter.addWidget(self.file_list_viewer)
         
         
         # Setting the mainWindow properties
@@ -49,17 +46,17 @@ class MainWindow(QMainWindow):
         
         
         # Connecting IconListViewerWidget
-        self.icon_list_viewer_widget.file_double_clicked.connect(self.openFilePath)
-        self.icon_list_viewer_widget.folder_double_clicked.connect(self.updateIconListRootIndex)
-        self.icon_list_viewer_widget.folder_double_clicked.connect(self.expandDirectoryTreeView)
+        self.file_list_viewer.file_double_clicked.connect(self.openFilePath)
+        self.file_list_viewer.folder_double_clicked.connect(self.updateIconListRootIndex)
+        self.file_list_viewer.folder_double_clicked.connect(self.expandDirectoryTreeView)
         
         # Qsplitter being used to resize the widgets
         self.splitter.splitterMoved.connect(self.refreshView)
     
         # Connection View MenuBar
-        self.menu_bar.switch_to_icon_mode_signal.connect(self.icon_list_viewer_widget.setIconView)
-        self.menu_bar.switch_to_list_mode_signal.connect(self.icon_list_viewer_widget.setListView)
-        self.menu_bar.refresh_view_signal.connect(self.icon_list_viewer_widget.refreshView)
+        self.menu_bar.switch_to_icon_mode_signal.connect(self.file_list_viewer.setIconView)
+        self.menu_bar.switch_to_list_mode_signal.connect(self.file_list_viewer.setListView)
+        self.menu_bar.refresh_view_signal.connect(self.file_list_viewer.refreshView)
     
         # Connection Tools MenuBar
         self.menu_bar.switch_to_new_icon_list_root_index.connect(self.updateIconListRootIndex)
@@ -78,14 +75,14 @@ class MainWindow(QMainWindow):
         # opening the file code goes here
     
     def getCurrentDirectory(self):
-        return self.icon_list_viewer_widget.getCurrentDirectoryPath()
+        return self.file_list_viewer.getCurrentDirectoryPath()
     
     def refreshView(self):
-        self.icon_list_viewer_widget.refreshView()
+        self.file_list_viewer.refreshView()
         self.directory_tree_view.refreshView()
         
     def updateIconListRootIndex(self , parent_folder_path) :
-        self.icon_list_viewer_widget.setNewRootIndex(parent_folder_path)
+        self.file_list_viewer.setNewRootIndex(parent_folder_path)
     
         
     def expandDirectoryTreeView(self , directory):

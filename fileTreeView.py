@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget , QTreeView , QVBoxLayout , QHeaderView , QApplication
 from PySide6.QtCore  import QDir, Signal
-from customFileSystemModel import CustomFileSystemModel
+from customFileSystemModel import CustomDirectoryModel
 import os
 
 
@@ -13,7 +13,7 @@ class DirectoryTreeViewWidget(QWidget):
         super().__init__()
         self.setWindowTitle("File Tree View")        
         
-        self.file_system_model = CustomFileSystemModel()
+        self.file_system_model = CustomDirectoryModel()
         self.file_system_model.setRootPath(root_directory)
         
         self.file_tree_view = QTreeView(self)
