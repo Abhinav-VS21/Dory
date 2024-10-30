@@ -1,45 +1,55 @@
-import sys
-import os
 
+import os
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QListView , QApplication , QMainWindow , QFileSystemModel
 from PySide6.QtGui import  QIcon , QStandardItemModel
-from PySide6.QtCore import QDir , QTimer
+from PySide6.QtCore import QDir , QTimer , Signal , QSize
 from customFileSystemModel import CustomFileSystemModel
-# from wrappingItemDelegate import WrappingItemDelegate
+from WrappingItemDelegate import TextWrappingIconDelegate
 
 
 
 class IconListViewerWidget(QWidget):
-    def __init__(self, root_directory=QDir.rootPath(),index_directory = QDir.homePath()):
+    # Signals
+    file_double_clicked = Signal(str)
+    folder_double_clicked = Signal(str)
+    
+    def __init__(self, root_directory=QDir.homePath()):
         super().__init__()
-        #verifing the directory
-        print(f"Directory exists: {os.path.exists(root_directory)}")
-
+               
         
-        # Set up the model for the QListView
-        self.model = CustomFileSystemModel()
-        self.model.setRootPath(root_directory)
-        self.model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
+        self.directory_model = CustomFileSystemModel()
+        self.directory_model.setRootPath(root_directory)
+        self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
         
-        # Create a list view to show icons
         self.icon_list_view = QListView(self)
-        self.icon_list_view.setModel(self.model)
+        self.icon_list_view.setModel(self.directory_model)
 
-        # Set the root index for the directory
-        root_index = self.model.index(root_directory)
-        self.icon_list_view.setRootIndex(root_index)
-
-        # Debugging: Print the number of items in the directory
-        item_count = self.model.rowCount(root_index)
-        print(f"Number of items in '{root_directory}': {item_count}")
+        root_index = self.directory_model.index(root_directory)
+        self.icon_list_view.setRootIndex(root_index)     
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.icon_list_view)
-
         
+
+        # defining connections
+        self.icon_list_view.doubleClicked.connect(self.onDoubleClicked)
+        
+        
+    # Defining the slots
+    def onDoubleClicked(self, index):
+        if not index.isValid():
+            print("Invalid index in iconViewerWidget")
+            return
+        path = self.directory_model.filePath(index)
+        if self.directory_model.isDir(index):
+            self.folder_double_clicked.emit(path)
+        else:
+            self.file_double_clicked.emit(path)
+            
+    
     def setNewRootIndex(self , directory):
         print('Setting new root index to: ',directory)  
-        newRootIndex = self.model.index(directory)
+        newRootIndex = self.directory_model.index(directory)
         if not newRootIndex.isValid():
             print('The new root index is not valid')
             return
@@ -51,8 +61,6 @@ class IconListViewerWidget(QWidget):
         self.icon_list_view.setViewMode(QListView.IconMode)
         self.icon_list_view.setSpacing(5)
         self.icon_list_view.setWordWrap(True)
-        
-        
         self.refreshView()    
         
     def setListView(self):
@@ -62,13 +70,15 @@ class IconListViewerWidget(QWidget):
     
     def refreshView(self):
         current_dir_path= self.getCurrentDirectoryPath()
-        self.icon_list_view.setRootIndex(self.model.index(current_dir_path))
+        self.icon_list_view.setRootIndex(self.directory_model.index(current_dir_path))
         
     def getCurrentDirectoryPath(self):
-        return self.model.filePath(self.icon_list_view.rootIndex())
+        return self.directory_model.filePath(self.icon_list_view.rootIndex())
+    
+    
 
 '''debugging'''
-# app = QApplication(sys.argv)
+# app = QApplication([])
 # icon_viewer = IconListViewerWidget()
 # icon_viewer.setWindowTitle('Icon Viewer')
 # icon_viewer.show()

@@ -4,11 +4,12 @@ from customFileSystemModel import CustomFileSystemModel
 import os
 
 
-class DirectoryTreeViewWidget(QWidget):
-    #Signals
+class DirectoryTreeView(QTreeView):
     
+    #Signals
     file_double_clicked = Signal(str)
     folder_double_clicked = Signal(str)
+    
     def __init__(self ,root_directory = QDir.rootPath()): 
         super().__init__()
         self.setWindowTitle("File Tree View")        
@@ -16,40 +17,31 @@ class DirectoryTreeViewWidget(QWidget):
         self.file_system_model = CustomFileSystemModel()
         self.file_system_model.setRootPath(root_directory)
         
-        self.file_tree_view = QTreeView(self)
-        self.file_tree_view.setModel(self.file_system_model)
-        self.file_tree_view.setRootIndex(self.file_system_model.index(root_directory))
+        self.setModel(self.file_system_model)
+        self.setRootIndex(self.file_system_model.index(root_directory))
 
         
-        for i in range(1, self.file_system_model.columnCount()): # Hide all columns except the first one
-            self.file_tree_view.hideColumn(i)
+        for i in range(1, self.file_system_model.columnCount()):
+            self.hideColumn(i)
+            
+        self.setHeaderHidden(True)
         
-        self.file_tree_view.setHeaderHidden(True)
+        self.file_system_model.setFilter( QDir.NoDotAndDotDot | QDir.AllDirs)
         
-        self.file_system_model.setFilter( QDir.NoDotAndDotDot | QDir.AllDirs)  
-
-        header = self.file_tree_view.header()
         
         # Disable user resizing
-        header.setSectionsMovable(False)  # Prevents dragging columns
-               
-        
-        v_layout = QVBoxLayout(self)
-        v_layout.addWidget(self.file_tree_view)
-        self.setLayout(v_layout)
-        
+        header = self.header()
+        header.setSectionsMovable(False)
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
         
         
         #Connection Double Clicked
-        self.file_tree_view.doubleClicked.connect(self.onDoubleClicked)
+        self.doubleClicked.connect(self.onDoubleClicked)
         
-    
     # Defining the slots
     def refreshView(self):
         current_directory = self.getCurrentDirectory()
-        self.file_tree_view.setRootIndex(current_directory)
-        
+        self.setRootIndex(current_directory)
         
     def traverseDirectoryTree(self , directory):
      
@@ -75,25 +67,13 @@ class DirectoryTreeViewWidget(QWidget):
 
         for path in traversal:
             index = self.file_system_model.index(path)
-            self.file_tree_view.setExpanded(index, True)
-
-    def getCurrentDirectory(self):
-        return self.file_tree_view.rootIndex()
-    
+            self.setExpanded(index, True)
+            
     def onDoubleClicked(self , index):
-        path = self.file_system_model.filePath(index)
-        if self.file_system_model.isDir(index):
-            self.folder_double_clicked.emit(path)
+        file_path = self.file_system_model.filePath(index)
+        if os.path.isfile(file_path):
+            self.file_double_clicked.emit(file_path)
         else:
-            self.file_double_clicked.emit(path)
+            self.folder_double_clicked.emit(file_path)
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-

@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import QLineEdit , QCompleter, QApplication , QWidget , QHBoxLayout 
 from PySide6.QtCore import QDir , Qt , Signal , QStringListModel
 from PySide6.QtCore import Signal
+from DirectoryCompleter import DirectoryCompleter
 
 class AddressBar(QLineEdit):
-    pathChanged = Signal(str)  # Custom signal to emit when path is changed
+    address_path_changed = Signal(str)  # Custom signal to emit when path is changed
 
     def __init__(self, default_path="", parent=None):
         super().__init__(parent)
@@ -11,35 +12,25 @@ class AddressBar(QLineEdit):
         self.setText(default_path)
         
         #Initializing Completer
-        self.completer = QCompleter(self)
-        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
-        self.setCompleter(self.completer)
-        
-        # Set a default list of suggestions (you can customize this)
-        self.update_completer([default_path, "/home", "/home/user/Documents", "/usr/local"])
-
+        self.completer = DirectoryCompleter(self)
         # Connect to the method to navigate when Enter is pressed
         self.returnPressed.connect(self.emit_path)
 
     def emit_path(self):
         path = self.text()
         if QDir(path).exists():
-            self.pathChanged.emit(path)
+            self.address_path_changed.emit(path)
         else:
-            print("Invalid path. Please enter a valid directory.")
+            self.setText("Invalid Path")
+            self.selectAll()        
 
-    def update_completer(self, paths):
-        # Update the completer's model with new paths
-        model = QStringListModel(paths)
-        self.completer.setModel(model)
 # debug 
 
 # app = QApplication([])
 # window = QWidget()
 # window.setWindowTitle("Address Bar Test")
 # window.resize(400, 100)
-# address_bar = AddressBar(default_path="/home")
-# address_bar.pathChanged.connect(lambda path: print(f"Path changed to: {path}"))
+# address_bar = AddressBar()
 # h_layout = QHBoxLayout(window)
 # h_layout.addWidget(address_bar)
 # window.setLayout(h_layout)
