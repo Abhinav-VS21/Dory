@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal, QDir
 
 class MenuBar(QMenuBar):
     # Signals
-    create_new_window   = Signal()
+    open_new_window     = Signal()
     refresh_view        = Signal()
     to_icon_mode        = Signal()
     to_list_mode        = Signal()
@@ -38,7 +38,7 @@ class MenuBar(QMenuBar):
         file_menu.addActions([new_window, create_new_file, create_new_folder, dir_property])
         
         # Connect actions to signals
-        new_window.triggered.connect(self.create_new_window)
+        new_window.triggered.connect(self.open_new_window)
         create_new_file.triggered.connect(self.create_new_file)
         create_new_folder.triggered.connect(self.create_new_folder)
         dir_property.triggered.connect(self.open_dir_properties)
