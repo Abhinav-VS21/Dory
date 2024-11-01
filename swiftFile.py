@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QApplication , QMainWindow ,QWidget , QVBoxLayout , QSplitter
 from PySide6.QtCore import Qt , QDir
-from DirectoryTreeView import DirectoryTreeView
-from IconViewer import FileListViewer
+from directoryTreeView import DirectoryTreeView
+from iconViewer import FileListViewer
 from menuBar import MenuBar
 from addressBar import AddressBar
 
@@ -34,6 +34,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Swift File")
         self.resize(1000, 1000)
         
+        
+        # Customising the directory viewer
+        self.directory_tree_view.setMaximumWidth(300)
         
         # Create a menu bar
         self.menu_bar = MenuBar()

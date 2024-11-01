@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget , QTreeView , QVBoxLayout , QHeaderView , QApplication
+from PySide6.QtWidgets import QTreeView , QHeaderView 
 from PySide6.QtCore  import QDir, Signal
 from customFileSystemModel import CustomDirectoryModel
 import os

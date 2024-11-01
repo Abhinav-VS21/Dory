@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMenuBar, QInputDialog, QMessageBox, QApplication, QDialog , QVBoxLayout , QListWidget
+from PySide6.QtWidgets import QMenuBar, QInputDialog, QMessageBox
 from PySide6.QtGui import QAction 
 from PySide6.QtCore import Signal , QDir
 from searchDialog import SearchDialog

@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QLineEdit , QCompleter, QApplication , QWidget , QHBoxLayout 
-from PySide6.QtCore import QDir , Qt , Signal , QStringListModel
+from PySide6.QtWidgets import QLineEdit 
+from PySide6.QtCore import QDir , Signal 
 from PySide6.QtCore import Signal
 from DirectoryCompleter import DirectoryCompleter
 

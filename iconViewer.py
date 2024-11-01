@@ -1,7 +1,5 @@
-import os
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QListView , QApplication , QMainWindow , QFileSystemModel
-from PySide6.QtGui import  QIcon , QStandardItemModel
-from PySide6.QtCore import QDir , QTimer , Signal , QSize
+from PySide6.QtWidgets import  QListView 
+from PySide6.QtCore import QDir , Signal 
 from customFileSystemModel import CustomDirectoryModel
 
 class FileListViewer(QListView):

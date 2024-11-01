@@ -1,8 +1,7 @@
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QLineEdit, QCheckBox, QPushButton, QApplication,
-    QComboBox, QListWidget, QListWidgetItem, QHBoxLayout, QLabel, QProgressBar, QMessageBox , QApplication , QCompleter 
-)
-from PySide6.QtCore import  QThread, Signal, QStringListModel
+    QDialog, QVBoxLayout, QLineEdit, QCheckBox, QPushButton,
+    QComboBox, QListWidget, QListWidgetItem, QHBoxLayout, QProgressBar, QMessageBox )
+from PySide6.QtCore import  QThread, Signal
 from DirectoryCompleter import DirectoryCompleter
 import os 
 
