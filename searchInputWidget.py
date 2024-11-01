@@ -3,7 +3,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal
 
 class SearchInputWidget(QWidget):
-    get_search_conditions = Signal(dict)
+    search_conditions = Signal(dict)
     
     def __init__(self):
         super().__init__()
@@ -51,7 +51,7 @@ class SearchInputWidget(QWidget):
         self.update_conditions()
         
         # Emit the search conditions signal
-        self.get_search_conditions.emit(self.search_conditions)
+        self.search_conditions.emit(self.search_conditions)
 
     def update_conditions(self):
         # Update the search conditions based on the button states
