@@ -34,6 +34,8 @@ class StatusBarWidget(QWidget):
         self.setLayout(layout)
 
     def update_status(self, message):
+        """updates the status message shown in the status bar."""
+        
         self.status_label.setText(message)  # Update the status message
 
 

@@ -17,6 +17,7 @@ class AddressBar(QLineEdit):
         self.returnPressed.connect(self.emit_path)
 
     def emit_path(self):
+        """Emits the address_path_changed signal with the current path."""
         path = self.text()
         if QDir(path).exists():
             self.address_path_changed.emit(path)
@@ -77,6 +78,7 @@ class AddressBarWidget(QWidget):
         self.setLayout(layout)
 
     def update_address(self, path):
+        """emits the address_path_changed signal with the given path."""
         self.address_path_changed.emit(path)
 
 

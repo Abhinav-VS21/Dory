@@ -93,14 +93,18 @@ class MenuBar(QMenuBar):
 
     # Go Menu Actions
     def goToHome(self):
+        """Changes the current directory to the user's home directory"""
         self.change_directory.emit(QDir.homePath())
     
     def goToRoot(self):
+        """Changes the current directory to the root directory"""
         self.change_directory.emit(QDir.rootPath())
                
     # Help Menu Actions
     def showAboutDialog(self):
+        """Shows the about dialog."""
         QMessageBox.about(self, "About", "This is a simple file manager")
     
     def showShortcutsDialog(self):
+        """Shows the shortcuts dialog."""
         QMessageBox.about(self, "Shortcuts", "Here are the shortcuts for this application")
