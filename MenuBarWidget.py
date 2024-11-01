@@ -40,7 +40,7 @@ class MenuBar(QMenuBar):
         # Connect actions to signals
         new_window.triggered.connect(self.open_new_window)
         create_new_file.triggered.connect(self.create_new_file)
-        create_new_folder.triggered.connect(self.create_new_folder)
+        create_new_folder.triggered.connect(self. create_new_folder)
         dir_property.triggered.connect(self.open_dir_properties)
     
     def setup_view_menu(self):
