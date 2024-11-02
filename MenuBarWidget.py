@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QMenuBar, QMessageBox
 from PySide6.QtGui import QAction 
 from PySide6.QtCore import Signal, QDir
+from catchExecptions import catch_exceptions
 
 class MenuBar(QMenuBar):
     # Signals
@@ -16,10 +17,13 @@ class MenuBar(QMenuBar):
     create_new_folder   = Signal()
     open_dir_properties = Signal()
 
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.init_menu()
     
+    
+    @catch_exceptions
     def init_menu(self):
         # Setup individual menus
         self.setup_file_menu()
@@ -28,6 +32,8 @@ class MenuBar(QMenuBar):
         self.setup_bookmarks_menu()
         self.setup_help_menu()
     
+    
+    @catch_exceptions
     def setup_file_menu(self):
         file_menu = self.addMenu("File")
         new_window = QAction('Open New Window', self)
@@ -43,6 +49,8 @@ class MenuBar(QMenuBar):
         create_new_folder.triggered.connect(self. create_new_folder)
         dir_property.triggered.connect(self.open_dir_properties)
     
+    
+    @catch_exceptions
     def setup_view_menu(self):
         view_menu = self.addMenu("View")
         icon_mode_action = QAction("Icon Mode", self)
@@ -56,6 +64,8 @@ class MenuBar(QMenuBar):
         list_mode_action.triggered.connect(self.to_list_mode)
         refresh_action.triggered.connect(self.refresh_view)
     
+    
+    @catch_exceptions
     def setup_go_menu(self):
         go_menu = self.addMenu("Go")
         go_home = QAction("Home", self)
@@ -69,6 +79,8 @@ class MenuBar(QMenuBar):
         go_root.triggered.connect(self.goToRoot)
         search_file.triggered.connect(self.run_search_widget)
     
+    
+    @catch_exceptions
     def setup_bookmarks_menu(self):
         bookmarks_menu = self.addMenu("Bookmarks")
         add_bookmark = QAction("Add Bookmark", self)
@@ -80,6 +92,8 @@ class MenuBar(QMenuBar):
         add_bookmark.triggered.connect(self.add_bookmark)
         toggle_bookmark.triggered.connect(self.toggle_bookmark)
     
+    
+    @catch_exceptions
     def setup_help_menu(self):
         help_menu = self.addMenu("Help")
         about_action = QAction("About", self)
@@ -92,19 +106,25 @@ class MenuBar(QMenuBar):
         all_shortcuts.triggered.connect(self.showShortcutsDialog)
 
     # Go Menu Actions
+    @catch_exceptions
     def goToHome(self):
         """Changes the current directory to the user's home directory"""
         self.change_directory.emit(QDir.homePath())
     
+    
+    @catch_exceptions
     def goToRoot(self):
         """Changes the current directory to the root directory"""
         self.change_directory.emit(QDir.rootPath())
                
     # Help Menu Actions
+    @catch_exceptions
     def showAboutDialog(self):
         """Shows the about dialog."""
         QMessageBox.about(self, "About", "This is a simple file manager")
     
+    
+    @catch_exceptions
     def showShortcutsDialog(self):
         """Shows the shortcuts dialog."""
         QMessageBox.about(self, "Shortcuts", "Here are the shortcuts for this application")

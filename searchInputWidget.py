@@ -1,10 +1,12 @@
 from PySide6.QtWidgets import QLineEdit, QPushButton, QHBoxLayout, QWidget, QToolButton
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Signal
+from catchExecptions import catch_exceptions
 
 class SearchInputWidget(QWidget):
     search_conditions = Signal(dict)
     
+    @catch_exceptions
     def __init__(self):
         super().__init__()
         
@@ -34,7 +36,7 @@ class SearchInputWidget(QWidget):
             self.layout.addWidget(widget)
 
         # Initializing the search conditions
-        self.search_conditions = {
+        self.search_conditions = {  
             'search_text': '',
             'case_sensitive': False,
             'recursive_search': False,
@@ -44,6 +46,8 @@ class SearchInputWidget(QWidget):
         # Connecting the search button
         self.search_button.clicked.connect(self.search)
 
+
+    @catch_exceptions
     def search(self):
         # Get the current search text and update conditions
         search_text = self.search_input.text()
@@ -53,6 +57,8 @@ class SearchInputWidget(QWidget):
         # Emit the search conditions signal
         self.search_conditions.emit(self.search_conditions)
 
+
+    @catch_exceptions
     def update_conditions(self):
         # Update the search conditions based on the button states
         self.search_conditions['case_sensitive'] = self.case_sensitive.isChecked()

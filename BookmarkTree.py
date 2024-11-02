@@ -1,29 +1,36 @@
-import json
-from PySide6.QtWidgets import QTreeView, QVBoxLayout, QWidget, QPushButton, QToolTip ,QMenu
+from PySide6.QtWidgets import QTreeView, QToolTip ,QMenu
 from PySide6.QtGui import QStandardItemModel, QStandardItem , QAction
-from PySide6.QtCore import Qt, Signal, QDir 
+from PySide6.QtCore import Qt, Signal
+from catchExecptions import catch_exceptions
+import json
+
 
 class BookmarkTree(QTreeView):
+    #Signals
     open_in_curr_window     = Signal(str)  
     open_in_new_window      = Signal(str)
        
+       
+    @catch_exceptions
     def __init__(self, bookmarks_file="bookmarks.json", parent=None):
         super().__init__(parent)
         self.bookmarks_file = bookmarks_file
         
-        self.setMouseTracking(True)  # Enable mouse tracking for tooltips
+        self.setMouseTracking(True)  
 
         # Set up the model
         self.bookmark_model = QStandardItemModel()
         self.bookmark_model.setHorizontalHeaderLabels(["Bookmarks"])
         self.setModel(self.bookmark_model)
 
-        # Load bookmarks on startup
+        
         self.load_bookmarks()
 
-        # Connect double-click signal to bookmark clicked handler
+        # Connections
         self.doubleClicked.connect(self.on_bookmark_clicked)
         
+        
+    @catch_exceptions
     def mouseMoveEvent(self, event):
         index = self.indexAt(event.pos())  # Get the index at the mouse position
         if index.isValid():
@@ -37,6 +44,8 @@ class BookmarkTree(QTreeView):
             QToolTip.hideText()
         super().mouseMoveEvent(event)
         
+        
+    @catch_exceptions   
     def mouseDoubleClickEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid():
@@ -44,7 +53,9 @@ class BookmarkTree(QTreeView):
             self.open_in_curr_window   .emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole))
         else:
             super().mouseDoubleClickEvent(event)
-            
+          
+          
+    @catch_exceptions  
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         if index.isValid():
@@ -70,34 +81,27 @@ class BookmarkTree(QTreeView):
 
             # Show the context menu at the cursor position
             menu.exec(event.globalPos())
+    
 
-    def add_bookmark(self, name, path):
-        """Adds a new bookmark to the tree and saves it persistently."""
-        # Create a new item for the bookmark
-        item = QStandardItem(name)
-        item.setData(path, Qt.UserRole)  # Store the path in UserRole
-
-        # Add the item to the model
-        self.bookmark_model.appendRow(item)
-
-        # Save the updated bookmarks list to file
-        self.save_bookmarks()
-
+    @catch_exceptions
     def remove_bookmark(self, name):
         """Removes a bookmark by name and updates the persistent store."""
         for row in range(self.bookmark_model.rowCount()):
             item = self.bookmark_model.item(row)
             if item.text() == name:
                 self.bookmark_model.removeRow(row)
-                self.save_bookmarks()  # Save changes to file
+                self.save_bookmarks()  
                 break
-            
+         
+         
+    @catch_exceptions   
     def rename_bookmark(self, index):
         """Puts the selected bookmark in rename mode."""
         if index.isValid():
             self.edit(index)
+     
                       
-
+    @catch_exceptions
     def load_bookmarks(self):
         """Loads bookmarks from the JSON file."""
         try:
@@ -111,6 +115,8 @@ class BookmarkTree(QTreeView):
             # If file doesn't exist or is corrupt, start with an empty list
             print("No bookmarks found or file is invalid. Starting fresh.")
 
+
+    @catch_exceptions
     def save_bookmarks(self):
         """Saves the current bookmarks to the JSON file."""
         bookmarks = {}
@@ -123,22 +129,44 @@ class BookmarkTree(QTreeView):
         with open(self.bookmarks_file, 'w') as file:
             json.dump(bookmarks, file, indent=4)
 
+
+    @catch_exceptions
     def on_bookmark_clicked(self, index):
         """Handles bookmark double-click to emit the stored path."""
         item = self.bookmark_model.itemFromIndex(index)
         path = item.data(Qt.UserRole)
         self.open_in_curr_window.emit(path)
-        
+       
+       
+    @catch_exceptions 
     def hideSelf(self):
         """Hides the BookmarkTree widget."""
         self.hide()
-        
+       
+       
+    @catch_exceptions 
     def showSelf(self):
         """Shows the BookmarkTree widget."""
         self.show()
+            
+           
+    # slots
+    @catch_exceptions
+    def add_bookmark(self, name, path):
+        """Adds a new bookmark to the tree and saves it persistently."""
+        
+        # Create a new item for the bookmark
+        item = QStandardItem(name)
+        item.setData(path, Qt.UserRole)  # Store the path in UserRole
+
+        # Add the item to the model
+        self.bookmark_model.appendRow(item)
+
+        # Save the updated bookmarks list to file
+        self.save_bookmarks()
     
         
-    
+# from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton
 # class BookmarkManager(QWidget):
 #     """A simple UI to manage the BookmarkTree with add/remove functionality."""
 #     def __init__(self):
@@ -162,7 +190,7 @@ class BookmarkTree(QTreeView):
 
 #         self.setLayout(layout)
 
-# from PySide6.QtWidgets import QApplication
+
 # app = QApplication([])
 # window = BookmarkManager()
 # window.show()

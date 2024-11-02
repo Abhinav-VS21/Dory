@@ -1,11 +1,14 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSlider, QLabel
 from PySide6.QtCore import Qt , Signal
+from catchExecptions import catch_exceptions
 
 class StatusBarWidget(QWidget):
     # Signals
-    icon_size = Signal(int)  
+    icon_size       = Signal(int)  
     toggle_bookmark = Signal()
-    hide_sidebar = Signal()
+    hide_sidebar    = Signal()
+    
+    @catch_exceptions
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -42,6 +45,8 @@ class StatusBarWidget(QWidget):
         self.hide_sidebar_button.clicked.connect(self.hide_sidebar.emit)
         self.icon_size_slider.valueChanged.connect(self.icon_size.emit)
         
+        
+    @catch_exceptions
     def update_status(self, message):
         """updates the status message shown in the status bar."""
         

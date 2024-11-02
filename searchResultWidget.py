@@ -1,11 +1,12 @@
 from PySide6.QtWidgets import QListView , QMenu
 from PySide6.QtCore import Signal, QDir, QSortFilterProxyModel, Qt
 from PySide6.QtGui import QStandardItemModel , QAction
-
+from catchExecptions import catch_exceptions
 class SearchResultWidget(QListView):
     path_double_clicked = Signal(str)
     
-    def __init__(self, current_directory: QDir, parent=None):
+    @catch_exceptions
+    def __init__(self, parent=None):
         super().__init__(parent)  # Pass parent to the superclass
         self.item_model = QStandardItemModel(self)  # Set the model's parent
         self.setModel(self.model)
@@ -21,19 +22,27 @@ class SearchResultWidget(QListView):
         self.setSortingEnabled(True)
         self.doubleClicked.connect(self.item_double_clicked_slot)
     
+    
+    @catch_exceptions
     def item_double_clicked_slot(self, index):  # Fixed method name to match the signal
         item = self.item_model.itemFromIndex(index)
         if item:  # Ensure item is valid
             self.path_double_clicked.emit(item.text())
         
+        
+    @catch_exceptions
     def clear_results(self):
         self.item_model.clear()  # Renamed for clarity
         
+        
+    @catch_exceptions
     def setResults(self, results):
         self.clear_results()  # Call the renamed clear method
         for result in results:
             self.item_model.appendRow(list(result))
             
+            
+    @catch_exceptions
     def contextMenuEvent(self, event):
         menu = QMenu(self)
 
@@ -61,12 +70,16 @@ class SearchResultWidget(QListView):
         # Show the menu at the cursor position
         menu.exec(event.globalPos())
 
+
+    @catch_exceptions
     def toggleReverseOrder(self):
         self.reverse_order = not self.reverse_order
         # Re-sort the current column with the new order
         column_index = self.proxy_model.sortColumn()
         self.proxy_model.sort(column_index, Qt.DescendingOrder if self.reverse_order else Qt.AscendingOrder)
 
+
+    @catch_exceptions
     def sortByColumn(self, column_index):
         # Sort the proxy model by the specified column and current order
         self.proxy_model.sort(column_index, Qt.DescendingOrder if self.reverse_order else Qt.AscendingOrder)

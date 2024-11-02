@@ -1,5 +1,6 @@
 from PySide6.QtCore import QThread , Signal 
 from PySide6.QtGui import QStandardItem
+from catchExecptions import catch_exceptions
 import os
 import time
 import mimetypes
@@ -9,6 +10,8 @@ class SearchThread(QThread):
     #Signals 
     list_of_file_items = Signal(list)
     
+    
+    @catch_exceptions
     def __init__(self ,  search_text:str ,  case_sensitive:bool , recursive_search:bool ,
                  full_match_search :bool, current_directory:str ,parent = None):
         
@@ -19,7 +22,7 @@ class SearchThread(QThread):
         self.full_match_search = False
         self.current_directory = '/home/MissShah_21'
         
-   
+    @catch_exceptions
     def searchFiles(self):
         
         def sizeof_fmt(num, suffix="B"):

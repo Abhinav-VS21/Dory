@@ -1,6 +1,10 @@
-from PySide6.QtWidgets import  (QListView , QFileSystemModel ,QMenu , QMessageBox , QDialog , QLabel , QVBoxLayout , QPushButton ,QFormLayout)
+from PySide6.QtWidgets import  (QListView , QFileSystemModel ,QMenu ,
+                                QMessageBox , QDialog , QLabel , QVBoxLayout,
+                                QPushButton,QFormLayout)
+
 from PySide6.QtCore import QDir , Signal , Qt , QFile , QSize
 from PySide6.QtGui import QAction
+from catchExecptions import catch_exceptions
 import os
 import random
 import time
@@ -20,7 +24,7 @@ class FileListViewer(QListView):
     cut_folder_signal   = Signal(str)
     
     
-    
+    @catch_exceptions
     def __init__(self, root_directory = QDir.homePath()) -> None:
         super().__init__()
         
@@ -39,6 +43,7 @@ class FileListViewer(QListView):
         self.doubleClicked.connect(self.onDoubleClicked)
         
     # Defining the slots
+    @catch_exceptions
     def onDoubleClicked(self, index):
         if not index.isValid():
             print("Invalid index in FileListWidget")
@@ -49,6 +54,8 @@ class FileListViewer(QListView):
         else:
             self.open_file.emit(path)
             
+            
+    @catch_exceptions
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
         menu = QMenu(self)
@@ -122,7 +129,7 @@ class FileListViewer(QListView):
         menu.exec(event.globalPos())
             
             
-    
+    @catch_exceptions
     def setNewRootIndex(self, directory : str):
         """Sets the new root index of the file list viewer"""
         # Debugging
@@ -136,15 +143,21 @@ class FileListViewer(QListView):
         self.setRootIndex(newRootIndex)
         print('The new root index is set to: ',newRootIndex)
         
+        
+    @catch_exceptions
     def refreshView(self):
         self.directory_model.setRootPath(self.directory_model.rootPath())
+
         
+    @catch_exceptions
     def setIconView(self):
         self.setViewMode(QListView.IconMode)
         self.setGridSize(QSize(70,70))
         self.setResizeMode(QListView.Adjust)
         self.setFlow(QListView.LeftToRight)
         
+        
+    @catch_exceptions
     def setListView(self):
         self.setViewMode(QListView.ListMode)
         self.setGridSize(QSize())
@@ -152,17 +165,24 @@ class FileListViewer(QListView):
         self.setWordWrap(True)
         self.refreshView()
         
+        
+    @catch_exceptions
     def getCurrentDirectoryPath(self):
         return self.directory_model.filePath(self.rootIndex())
     
+    
+    @catch_exceptions
     def hideSelf(self):
         self.hide()
     
+    
+    @catch_exceptions
     def showSelf(self):
         self.show()
         
     
     # File operations
+    @catch_exceptions
     def createFile(self):
         current_dir = self.getCurrentDirectoryPath()
         random_file_name = 'new_file' + str(random.randint(1,1000)) + '.txt'
@@ -184,6 +204,7 @@ class FileListViewer(QListView):
         self.renameFile(file_index)
                     
                     
+    @catch_exceptions
     def renameFile(self,index):
         ''' Puts the selected file in rename mode '''
         if index.isValid():
@@ -192,6 +213,8 @@ class FileListViewer(QListView):
         else:
             print('Invalid index in renameFile')
         
+        
+    @catch_exceptions
     def onFileRenamed(self, topLeft, bottomRight):
         
         """Handles the file rename operation."""
@@ -212,6 +235,7 @@ class FileListViewer(QListView):
          
                 QMessageBox.warning(self, "Warning", "Invalid file name or name already exists.")
     
+    @catch_exceptions
     def propertiesFile(self,index):
         if not index.isValid():
             return
@@ -230,6 +254,7 @@ class FileListViewer(QListView):
         dialog.exec()
     
     # Folder operations
+    @catch_exceptions
     def createFolder(self):
         current_dir = self.getCurrentDirectoryPath()
         random_folder_name = 'new_folder' + str(random.randint(1,1000))
@@ -244,6 +269,7 @@ class FileListViewer(QListView):
             QMessageBox.critical(self, "Error", f"Failed to create folder: {str(e)}")
         
     
+    @catch_exceptions
     def renameFolder(self,index):
         ''' Puts the selected folder in rename mode '''
         if index.isValid():
@@ -251,6 +277,8 @@ class FileListViewer(QListView):
         else:
             print('Invalid index in renameFolder')
 
+
+    @catch_exceptions
     def onFolderRenamed(self, topLeft, bottomRight):
         """Handles the folder rename operation."""
         index = topLeft
@@ -267,6 +295,7 @@ class FileListViewer(QListView):
                 # Revert the change if the name is not valid
                 self.directory_model.setData(index, os.path.basename(old_path), Qt.EditRole)
     
+    @catch_exceptions
     def propertiesFolder(self,index):
         if not index.isValid():
             return
@@ -291,9 +320,11 @@ class FileListViewer(QListView):
 
     # widgets operations
     
+    @catch_exceptions
     def paste(self):
         pass
     
+    @catch_exceptions
     def openInTerminal(self):
         current_dir = self.getCurrentDirectoryPath()  # Get the current directory path
         if not current_dir:
@@ -314,6 +345,7 @@ class FileListViewer(QListView):
             QMessageBox.critical(self, "Error", f"Failed to open terminal: {str(e)}")
 
 
+    @catch_exceptions
     def showHiddenFiles(self):
         """Toggles the visibility of hidden files in the file list."""
         # Update the state
@@ -329,6 +361,7 @@ class FileListViewer(QListView):
         self.refreshView()
 
     
+    @catch_exceptions
     def currDirProperties(self):
         index = self.currentIndex()
         if not index.isValid():
@@ -355,6 +388,7 @@ class FileListViewer(QListView):
     
     
 class PropertiesDialog(QDialog):
+    @catch_exceptions
     def __init__(self, title, properties):
         super().__init__()
         self.setWindowTitle(title)

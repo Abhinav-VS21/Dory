@@ -1,9 +1,14 @@
-from PySide6.QtWidgets import QTreeView , QHeaderView, QWidget , QFileSystemModel
+from PySide6.QtWidgets import QTreeView , QHeaderView , QFileSystemModel
 from PySide6.QtCore  import QDir, Signal
+from catchExecptions import catch_exceptions
+
+
 class DirectoryTree(QTreeView):
     # Signals
     dir_double_clicked = Signal(str)
     
+    
+    @catch_exceptions
     def __init__(self,root_dir = QDir.homePath()):
         super().__init__()
         self.dir_system_model = QFileSystemModel()
@@ -26,11 +31,14 @@ class DirectoryTree(QTreeView):
         self.doubleClicked.connect(self.onDoubleClicked)
         
         # Defining the slots
+    @catch_exceptions
     def refreshView(self):
         """Refreshes the view to reflect any changes in the current directory."""
         
         self.dir_system_model.setRootPath(self.dir_system_model.rootPath())
         
+        
+    @catch_exceptions   
     def traverseDirectoryTree(self , directory):
         """
         Expands the directory tree to show the given directory path.
@@ -64,18 +72,23 @@ class DirectoryTree(QTreeView):
             index = self.dir_system_model.index(path)
             self.setExpanded(index, True)
             
-            
+    
+    @catch_exceptions        
     def onDoubleClicked(self,index):
         """Handles double-click events on directories."""
          
         dir_path = self.dir_system_model.filePath(index)
         self.dir_double_clicked.emit(dir_path)
-        
+    
+    
+    @catch_exceptions    
     def hideSelf(self):
         """Hides the DirectoryTree widget."""
         
         self.hide()
-        
+     
+     
+    @catch_exceptions   
     def showSelf(self):
         """Shows the DirectoryTree widget."""
         

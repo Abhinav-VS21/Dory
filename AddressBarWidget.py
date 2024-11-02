@@ -2,12 +2,17 @@ from PySide6.QtWidgets import QLineEdit, QWidget, QHBoxLayout, QPushButton
 from PySide6.QtCore import QDir, Signal
 from PySide6.QtGui import QIcon
 from DirectoryCompleter import DirectoryCompleter
+from catchExecptions import catch_exceptions
+
 
 class AddressBar(QLineEdit):
+    # Signals
     address_path_changed = Signal(str)  # Custom signal to emit when path is changed
 
+    @catch_exceptions
     def __init__(self, default_path="", parent=None):
         super().__init__(parent)
+        
         self.setPlaceholderText("Enter directory path...")
         self.setText(default_path)
         
@@ -15,7 +20,8 @@ class AddressBar(QLineEdit):
         self.completer = DirectoryCompleter(self)
         # Connect Enter key press to emit_path
         self.returnPressed.connect(self.emit_path)
-
+    
+    @catch_exceptions
     def emit_path(self):
         """Emits the address_path_changed signal with the current path."""
         path = self.text()
@@ -30,11 +36,12 @@ class AddressBarWidget(QWidget):
     # Signals
     go_back_signal          = Signal()
     go_forward_signal       = Signal()
-    run_search_widget       = Signal()
-    enter_icon_mode         = Signal()
-    enter_list_mode         = Signal()
+    run_search              = Signal()
+    to_icon_mode            = Signal()
+    to_list_mode            = Signal()
     address_path_changed    = Signal(str)
 
+    @catch_exceptions
     def __init__(self):
         super().__init__()
 
@@ -63,9 +70,9 @@ class AddressBarWidget(QWidget):
         # Connect buttons directly to signals
         self.go_back_button.clicked.connect(self.go_back_signal)
         self.go_forward_button.clicked.connect(self.go_forward_signal)
-        self.trigger_search_button.clicked.connect(self.run_search_widget)
-        self.icon_mode_button.clicked.connect(self.enter_icon_mode)
-        self.list_mode_button.clicked.connect(self.enter_list_mode)
+        self.trigger_search_button.clicked.connect(self.run_search)
+        self.icon_mode_button.clicked.connect(self.to_icon_mode)
+        self.list_mode_button.clicked.connect(self.to_list_mode)
         
         # Connect AddressBar's path change signal to update_address
         self.address_bar.address_path_changed.connect(self.update_address)
@@ -77,6 +84,7 @@ class AddressBarWidget(QWidget):
             layout.addWidget(widget)
         self.setLayout(layout)
 
+    @catch_exceptions
     def update_address(self, path):
         """emits the address_path_changed signal with the given path."""
         self.address_path_changed.emit(path)
