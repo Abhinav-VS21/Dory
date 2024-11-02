@@ -7,4 +7,3 @@ glanceFileManager = QApplication([])
 mainWindow = MainWindow()
 mainWindow.show()
 glanceFileManager.exec()
-

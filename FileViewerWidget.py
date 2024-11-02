@@ -369,6 +369,15 @@ class FileListViewer(QListView):
         # Refresh the view to reflect the changes
         self.refreshView()
 
+    @catch_exceptions
+    def setNewRootIndex(self, directory: str):
+        """Sets the new root index of the file list viewer."""
+        new_root_index = self.directory_model.index(directory)
+        if not new_root_index.isValid():
+            print("The new root index is not valid.")
+            return
+
+        self.setRootIndex(new_root_index)
     
     @catch_exceptions
     def currDirProperties(self):

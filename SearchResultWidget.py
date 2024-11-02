@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QListView , QMenu
-from PySide6.QtCore import Signal, QDir, QSortFilterProxyModel, Qt
+from PySide6.QtCore import Signal,  QSortFilterProxyModel, Qt
 from PySide6.QtGui import QStandardItemModel , QAction
 from catchExecptions import catch_exceptions
 class SearchResultWidget(QListView):
@@ -9,7 +9,7 @@ class SearchResultWidget(QListView):
     def __init__(self, parent=None):
         super().__init__(parent)  # Pass parent to the superclass
         self.item_model = QStandardItemModel(self)  # Set the model's parent
-        self.setModel(self.model)
+        self.setModel(self.item_model)
         self.doubleClicked.connect(self.item_double_clicked_slot)  # Corrected method name
         self.item_model.setHorizontalHeaderLabels(["Name", "Path", "Size", "Date Modified", "File Type"])
 
@@ -19,7 +19,6 @@ class SearchResultWidget(QListView):
         self.proxy_model.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.setModel(self.proxy_model)
 
-        self.setSortingEnabled(True)
         self.doubleClicked.connect(self.item_double_clicked_slot)
     
     

@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self, root_dir = QDir.homePath()):
         super().__init__()
         self.root_dir = root_dir
-        self.setWindowTitle("Nameless File Manager")
+        self.setWindowTitle("Glance File Manager")
         self.setGeometry(100, 100, 800, 600)
         
         # History stacks
@@ -48,40 +48,50 @@ class MainWindow(QMainWindow):
         self.file_viewer            = FileListViewer(root_directory=self.root_dir)
         self.search_input           = SearchInputWidget()
         self.search_result          = SearchResultWidget()
-        self.status_bar             = StatusBarWidget()
-        
-        # Creating layouts 
-        main_layout = QVBoxLayout()                     # Main layout for the entire window
-        content_layout = QSplitter()                    # Layout for the main content area (trees and file view)
-        content_layout.setOrientation(Qt.Horizontal)
-        side_pane_layout = QVBoxLayout()                # Layout for the right-side widgets (search input, viewer)
-        file_search_layout = QHBoxLayout()              # Layout for the file viewer and search result area
-        
-        # Adding widgets to layouts
-        main_layout.addWidget(self.address_bar_widget)
+        self.status_bar_widget      = StatusBarWidget()
         
         
-        main_layout.addWidget(content_layout)
-        content_layout.addWidget(self.directory_tree)
-        content_layout.addWidget(self.bookmark_tree)
-        content_layout.addWidget(side_pane_layout)  
+        # Set size of the address bar
+        height = 40
+        self.address_bar_widget.setFixedHeight(height)
+        self.status_bar_widget.setFixedHeight(height)
         
-        
-        side_pane_layout.addWidget(self.search_input)
-        side_pane_layout.addWidget(file_search_layout)
-        
-        
-        file_search_layout.addWidget(self.file_viewer)
-        file_search_layout.addWidget(self.search_result)
         
         # Setting the main layout
-        self_central_widget = QWidget()
-        self_central_widget.setLayout(main_layout)
+        directory_bookmark_widget = QWidget()
+        directory_bookmark_layout = QHBoxLayout()
+        directory_bookmark_widget.setLayout(directory_bookmark_layout)
+        directory_bookmark_layout.addWidget(self.directory_tree)
+        directory_bookmark_layout.addWidget(self.bookmark_tree)
+        
+        file_result_widget = QWidget()
+        file_result_layout = QHBoxLayout()
+        file_result_widget.setLayout(file_result_layout)
+        file_result_layout.addWidget(self.file_viewer)
+        file_result_layout.addWidget(self.search_result)
+        
+        input_search_widget = QWidget()
+        input_search_layout = QVBoxLayout()
+        input_search_widget.setLayout(input_search_layout)
+        input_search_layout.addWidget(self.search_input)
+        input_search_layout.addWidget(file_result_widget)
+        
+        splitter = QSplitter()
+        splitter.setOrientation(Qt.Horizontal)
+        splitter.addWidget(directory_bookmark_widget)
+        splitter.addWidget(input_search_widget)
+        
+        central_widget = QWidget()
+        main_layout = QVBoxLayout()
+        central_widget.setLayout(main_layout)
+        main_layout.addWidget(self.address_bar_widget)
+        main_layout.addWidget(splitter)  
+        main_layout.addWidget(self.status_bar_widget)      
+        
         
         # Setting up the main window
-        self.setCentralWidget(self_central_widget)
+        self.setCentralWidget(central_widget)
         self.setMenuBar(self.menu_bar)
-        self.setStatusBar(self.status_bar)
         
         # Connecting signals
         
@@ -133,16 +143,16 @@ class MainWindow(QMainWindow):
         self.search_result.path_double_clicked.connect(lambda path : self.showInFileViewer(path))
         
         # Status bar signals
-        self.status_bar.icon_size.connect(lambda size : self.file_viewer.setIconSize(size))
-        self.status_bar.hide_left_sidebar.connect(lambda : self.hideLeftSidebar())
-        self.status_bar.toggle_left_sidebar.connect(lambda : self.toogleLeftSidebar())
+        self.status_bar_widget.icon_size.connect(lambda size : self.file_viewer.setIconSize(size))
+        self.status_bar_widget.hide_left_sidebar.connect(lambda : self.hideLeftSidebar())
+        self.status_bar_widget.toggle_left_sidebar.connect(lambda : self.toogleLeftSidebar())
         
     
     @catch_exceptions
     def setup_initial_state(self):
-        self.search_input.isVisible(False)
-        self.search_result.isVisible(False)
-        self.bookmark_tree.isVisible(False)
+        self.search_input.setVisible(False)
+        self.search_result.setVisible(False)
+        self.bookmark_tree.setVisible(False)
         
     # Implementing the goBack and goForward methods  
     @catch_exceptions
@@ -186,7 +196,7 @@ class MainWindow(QMainWindow):
             self.forward_stack.clear()
 
         # Set the new root index in both the file viewer and directory tree
-        self.file_viewer.setRootIndex(path)
+        self.file_viewer.setNewRootIndex(path)
         self.directory_tree.setNewRootIndex(path)
         
     @catch_exceptions
@@ -293,22 +303,22 @@ class MainWindow(QMainWindow):
     def toogleLeftSidebar(self):
         
         if not (self.bookmark_tree.isVisible() or self.directory_tree.isVisible()):
-            self.bookmark_tree.isVisible(False)
-            self.directory_tree.isVisible(True)
+            self.bookmark_tree.setVisible(False)
+            self.directory_tree.setVisible(True)
         
-        self.bookmark_tree.isVisible(not self.bookmark_tree.isVisible())
-        self.directory_tree.isVisible(not self.directory_tree.isVisible())
+        self.bookmark_tree.setVisible(not self.bookmark_tree.setVisible())
+        self.directory_tree.setVisible(not self.directory_tree.setVisible())
             
             
     @catch_exceptions
     def hideLeftSidebar(self):
-        self.bookmark_tree.isVisible(False)
-        self.directory_tree.isVisible(False)
+        self.bookmark_tree.setVisible(False)
+        self.directory_tree.setVisible(False)
     
     def toggleRightSidebar(self):
-        self.search_input.isVisible(not self.search_input.isVisible())
-        self.search_result.isVisible(not self.search_result.isVisible())
-        self.file_viewer.isVisible(not self.file_viewer.isVisible())
+        self.search_input.setVisible(not self.search_input.isVisible())
+        self.search_result.setVisible(not self.search_result.isVisible())
+        self.file_viewer.setVisible(not self.file_viewer.isVisible())
     
     @catch_exceptions
     def addCurrentDirBookmark(self):
@@ -340,4 +350,12 @@ class MainWindow(QMainWindow):
         self.file_viewer.setVisible(True)
         self.setRootIndex(path)
         
-    
+from PySide6.QtWidgets import QApplication
+from MainWindow import MainWindow
+
+# Jai Shree Ram
+
+glanceFileManager = QApplication([])
+mainWindow = MainWindow()
+mainWindow.show()
+glanceFileManager.exec()

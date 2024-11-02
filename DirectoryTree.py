@@ -86,7 +86,6 @@ class DirectoryTree(QTreeView):
         """Sets the current directory to the given path."""
         
         index = self.dir_system_model.index(path)
-        self.setRootIndex(index)
         self.traverseDirectoryTree(path)
     
     @catch_exceptions    
