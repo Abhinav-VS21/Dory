@@ -67,4 +67,16 @@ class SearchInputWidget(QWidget):
 
         # Optionally, print conditions for debugging
         print(f"Updated search conditions: {self.search_conditions}")
+        
+    @catch_exceptions
+    def hideSelf(self):
+        """Hides the search widget"""
+        self.hide()
+        
+    @catch_exceptions
+    def showSelf(self):
+        """Shows the search widget"""
+        self.show()
+        
+    
 

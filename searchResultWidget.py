@@ -83,3 +83,13 @@ class SearchResultWidget(QListView):
     def sortByColumn(self, column_index):
         # Sort the proxy model by the specified column and current order
         self.proxy_model.sort(column_index, Qt.DescendingOrder if self.reverse_order else Qt.AscendingOrder)
+
+    @catch_exceptions
+    def hideSelf(self):
+        """Hides the result widget"""
+        self.hide()
+        
+    @catch_exceptions
+    def showSelf(self):
+        """Shows the result widget"""
+        self.show()

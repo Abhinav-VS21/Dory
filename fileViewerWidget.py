@@ -167,6 +167,13 @@ class FileListViewer(QListView):
         
         
     @catch_exceptions
+    def changeIconSize(self,size:int):
+        """Change icon size in QListView if in IconMode."""
+        if self.viewMode() == QListView.IconMode :
+            self.setIconSize(QSize(size,size))
+            
+        
+    @catch_exceptions
     def getCurrentDirectoryPath(self):
         return self.directory_model.filePath(self.rootIndex())
     
