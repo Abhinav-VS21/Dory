@@ -4,7 +4,7 @@ from PySide6.QtCore import Signal
 from catchExecptions import catch_exceptions
 
 class SearchInputWidget(QWidget):
-    search_conditions = Signal(dict)
+    search_conditions_signal = Signal(dict)
     
     @catch_exceptions
     def __init__(self):
@@ -44,7 +44,7 @@ class SearchInputWidget(QWidget):
         }
         
         # Connecting the search button
-        self.search_button.clicked.connect(self.search)
+        self.search_button.clicked.connect(lambda : self.search())
 
 
     @catch_exceptions
@@ -55,7 +55,7 @@ class SearchInputWidget(QWidget):
         self.update_conditions()
         
         # Emit the search conditions signal
-        self.search_conditions.emit(self.search_conditions)
+        self.search_conditions_signal.emit(self.search_conditions)
 
 
     @catch_exceptions

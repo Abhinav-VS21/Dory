@@ -44,7 +44,7 @@ class AddressBarWidget(QWidget):
     @catch_exceptions
     def __init__(self):
         super().__init__()
-
+        
         # Creating Widgets
         self.go_back_button         = QPushButton()
         self.go_forward_button      = QPushButton()
@@ -68,14 +68,14 @@ class AddressBarWidget(QWidget):
         self.list_mode_button.setToolTip("List Mode")
 
         # Connect buttons directly to signals
-        self.go_back_button.clicked.connect(self.go_back_signal)
-        self.go_forward_button.clicked.connect(self.go_forward_signal)
+        self.go_back_button.clicked.connect(lambda: self.goBack())
+        self.go_forward_button.clicked.connect(lambda: self.goForward())
         self.trigger_search_button.clicked.connect(self.run_search)
         self.icon_mode_button.clicked.connect(self.to_icon_mode)
         self.list_mode_button.clicked.connect(self.to_list_mode)
         
         # Connect AddressBar's path change signal to update_address
-        self.address_bar.address_path_changed.connect(self.update_address)
+        self.address_bar.address_path_changed.connect(self.updateAddress)
 
         # Set up the layout
         layout = QHBoxLayout(self)
@@ -85,7 +85,7 @@ class AddressBarWidget(QWidget):
         self.setLayout(layout)
 
     @catch_exceptions
-    def update_address(self, path):
+    def updateAddress(self, path):
         """emits the address_path_changed signal with the given path."""
         self.address_path_changed.emit(path)
 

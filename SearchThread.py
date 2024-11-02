@@ -59,10 +59,10 @@ class SearchThread(QThread):
                     
                     name_item = QStandardItem(filename)
                     path_item = QStandardItem(file_path)
-                    size_item = QStandardItem(file_size)
+                    size_item   = QStandardItem(file_size)
                     modified_item = QStandardItem(last_modified)
                     type_item = QStandardItem(file_type)
                     
                     results.append((name_item, path_item, size_item, modified_item, type_item))
                     
-        self.results_ready.emit(results)
+        self.list_of_file_items.emit(results)

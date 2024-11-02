@@ -9,19 +9,21 @@ import os
 import random
 import time
 import sys
-import subprocess   
+import subprocess
+import platform
+
 
 class FileListViewer(QListView):
     #Signals
     open_file           = Signal(str)
     open_folder         = Signal(str)
     open_in_new_window  = Signal(str)
-    open_in_curr_window = Signal(str)
     add_bookmark_path   = Signal((str,str))
     copy_file_signal    = Signal(str)
     cut_file_signal     = Signal(str)
-    copy_file_signal    = Signal(str)
+    copy_folder_signal  = Signal(str)
     cut_folder_signal   = Signal(str)
+    paste_signal        = Signal(str)
     
     
     @catch_exceptions
@@ -76,7 +78,7 @@ class FileListViewer(QListView):
                                  cut_folder_action, copy_folder_action, bookmark_action, 
                                  delete_folder_action, rename_folder_action, properties_folder_action])
                 
-                open_folder_action.triggered.connect(lambda: self.open_in_curr_window.emit(self.directory_model.filePath(index)))
+                open_folder_action.triggered.connect(lambda: self.open_folder.emit(self.directory_model.filePath(index)))
                 open_folder_new_window_action.triggered.connect(lambda: self.open_in_new_window.emit(self.directory_model.filePath(index)))
                 bookmark_action.triggered.connect(lambda: self.add_bookmark_path.emit((self.directory_model.filePath(index), self.directory_model.fileName(index))))
                 cut_folder_action.triggered.connect(lambda: self.cut_folder_signal.emit(self.directory_model.filePath(index)))
@@ -329,7 +331,7 @@ class FileListViewer(QListView):
     
     @catch_exceptions
     def paste(self):
-        pass
+        self.paste_signal.emit(self.getCurrentDirectoryPath())
     
     @catch_exceptions
     def openInTerminal(self):
@@ -339,13 +341,13 @@ class FileListViewer(QListView):
             return
 
         try:
-            if sys.platform == "win32":  # Windows
+            if platform.system() == "Windows":  # Windows
                 # Use 'start' to open the command prompt in the specified directory
                 subprocess.Popen(f'start cmd /K "cd {current_dir}"', shell=True)
-            elif sys.platform == "darwin":  # macOS
+            elif platform.system() == "Darwin":  # macOS
                 # Use 'open' with 'Terminal' to open the terminal in the specified directory
                 subprocess.Popen(['open', '-a', 'Terminal', current_dir])
-            else:  # Linux
+            elif platform.system() == "Linux":  # Linux
                 # Use 'xdg-terminal' or 'gnome-terminal' or any terminal available
                 subprocess.Popen(['gnome-terminal', '--working-directory', current_dir])
         except Exception as e:

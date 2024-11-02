@@ -31,13 +31,13 @@ class SearchResultWidget(QListView):
         
         
     @catch_exceptions
-    def clear_results(self):
+    def clearResults(self):
         self.item_model.clear()  # Renamed for clarity
         
         
     @catch_exceptions
     def setResults(self, results):
-        self.clear_results()  # Call the renamed clear method
+        self.clearResults()  # Call the renamed clear method
         for result in results:
             self.item_model.appendRow(list(result))
             

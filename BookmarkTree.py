@@ -7,7 +7,7 @@ import json
 
 class BookmarkTree(QTreeView):
     #Signals
-    open_in_curr_window     = Signal(str)  
+    open_in_cur_window     = Signal(str)  
     open_in_new_window      = Signal(str)
        
        
@@ -50,7 +50,7 @@ class BookmarkTree(QTreeView):
         index = self.indexAt(event.pos())
         if index.isValid():
             # Emit the custom signal to open the bookmark
-            self.open_in_curr_window   .emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole))
+            self.open_in_cur_window   .emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole))
         else:
             super().mouseDoubleClickEvent(event)
           
@@ -68,7 +68,7 @@ class BookmarkTree(QTreeView):
             rename_action = QAction("Rename", self)
 
             # Connect actions to their respective signals
-            open_action.triggered.connect(lambda: self.open_in_curr_window.emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole)))
+            open_action.triggered.connect(lambda: self.open_in_cur_window.emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole)))
             open_new_window_action.triggered.connect(lambda: self.open_in_new_window.emit(self.bookmark_model.itemFromIndex(index).data(Qt.UserRole)))
             remove_action.triggered.connect(lambda: self.remove_bookmark(self.bookmark_model.itemFromIndex(index).text()))
             rename_action.triggered.connect(lambda: self.rename_bookmark(index))
@@ -135,7 +135,7 @@ class BookmarkTree(QTreeView):
         """Handles bookmark double-click to emit the stored path."""
         item = self.bookmark_model.itemFromIndex(index)
         path = item.data(Qt.UserRole)
-        self.open_in_curr_window.emit(path)
+        self.open_in_cur_window.emit(path)
        
        
     @catch_exceptions 
@@ -152,7 +152,7 @@ class BookmarkTree(QTreeView):
            
     # slots
     @catch_exceptions
-    def add_bookmark(self, name, path):
+    def addBookmark(self, name:str, path:str):
         """Adds a new bookmark to the tree and saves it persistently."""
         
         # Create a new item for the bookmark

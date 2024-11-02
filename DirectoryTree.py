@@ -9,13 +9,13 @@ class DirectoryTree(QTreeView):
     
     
     @catch_exceptions
-    def __init__(self,root_dir = QDir.homePath()):
+    def __init__(self,root_directory = QDir.homePath()):
         super().__init__()
         self.dir_system_model = QFileSystemModel()
-        self.dir_system_model.setRootPath(root_dir)
+        self.dir_system_model.setRootPath(root_directory)
         
         self.setModel(self.dir_system_model)
-        self.setRootIndex(self.dir_system_model.index(root_dir))
+        self.setRootIndex(self.dir_system_model.index(root_directory))
         
         for i in range(1, self.dir_system_model.columnCount()):
             self.hideColumn(i)
@@ -81,13 +81,21 @@ class DirectoryTree(QTreeView):
         self.dir_double_clicked.emit(dir_path)
     
     
+    @catch_exceptions
+    def setNewRootIndex(self, path):
+        """Sets the current directory to the given path."""
+        
+        index = self.dir_system_model.index(path)
+        self.setRootIndex(index)
+        self.traverseDirectoryTree(path)
+    
     @catch_exceptions    
     def hideSelf(self):
         """Hides the DirectoryTree widget."""
         
         self.hide()
      
-     
+    
     @catch_exceptions   
     def showSelf(self):
         """Shows the DirectoryTree widget."""

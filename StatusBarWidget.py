@@ -5,8 +5,8 @@ from catchExecptions import catch_exceptions
 class StatusBarWidget(QWidget):
     # Signals
     icon_size       = Signal(int)  
-    toggle_bookmark = Signal()
-    hide_sidebar    = Signal()
+    toggle_left_sidebar = Signal()
+    hide_left_sidebar    = Signal()
     
     @catch_exceptions
     def __init__(self, parent=None):
@@ -41,13 +41,13 @@ class StatusBarWidget(QWidget):
         self.setLayout(layout)
 
         # Connect signals to slots
-        self.toggle_bookmark_button.clicked.connect(self.toggle_bookmark.emit)
-        self.hide_sidebar_button.clicked.connect(self.hide_sidebar.emit)
+        self.toggle_bookmark_button.clicked.connect(self.toggle_left_sidebar.emit)
+        self.hide_sidebar_button.clicked.connect(self.hide_left_sidebar.emit)
         self.icon_size_slider.valueChanged.connect(self.icon_size.emit)
         
         
     @catch_exceptions
-    def update_status(self, message):
+    def update_status(self, message='ready'):
         """updates the status message shown in the status bar."""
         
         self.status_label.setText(message)  # Update the status message

@@ -5,17 +5,17 @@ from catchExecptions import catch_exceptions
 
 class MenuBar(QMenuBar):
     # Signals
-    open_new_window     = Signal()
-    refresh_view        = Signal()
-    to_icon_mode        = Signal()
-    to_list_mode        = Signal()
-    change_directory    = Signal(str)  # Signal with path string
-    run_search_widget   = Signal()
-    add_bookmark        = Signal()
-    toggle_bookmark     = Signal()  # Corrected typo
-    create_new_file     = Signal()
-    create_new_folder   = Signal()
-    open_dir_properties = Signal()
+    open_new_window                 = Signal()
+    refresh_view                    = Signal()
+    to_icon_mode                    = Signal()
+    to_list_mode                    = Signal()
+    change_directory                = Signal(str)   
+    run_search_widget               = Signal()
+    add_current_dir_bookmark_signal = Signal()
+    toggle_bookmark                 = Signal()      
+    create_new_file                 = Signal()
+    create_new_folder               = Signal()
+    open_dir_properties             = Signal()
 
     
     def __init__(self, parent=None):
@@ -44,10 +44,11 @@ class MenuBar(QMenuBar):
         file_menu.addActions([new_window, create_new_file, create_new_folder, dir_property])
         
         # Connect actions to signals
-        new_window.triggered.connect(self.open_new_window)
-        create_new_file.triggered.connect(self.create_new_file)
-        create_new_folder.triggered.connect(self. create_new_folder)
-        dir_property.triggered.connect(self.open_dir_properties)
+        new_window.triggered.connect(lambda : self.open_new_window.emit())
+        dir_property.triggered.connect(lambda: self.open_dir_properties.emit())
+        create_new_file.triggered.connect(lambda : self.create_new_file.emit())
+        create_new_folder.triggered.connect(lambda: self.create_new_folder.emit())
+        
     
     
     @catch_exceptions
@@ -60,9 +61,9 @@ class MenuBar(QMenuBar):
         view_menu.addActions([icon_mode_action, list_mode_action, refresh_action])
         
         # Connect actions to signals
-        icon_mode_action.triggered.connect(self.to_icon_mode)
-        list_mode_action.triggered.connect(self.to_list_mode)
-        refresh_action.triggered.connect(self.refresh_view)
+        icon_mode_action.triggered.connect(lambda : self.to_icon_mode.emit())
+        list_mode_action.triggered.connect(lambda:self.to_list_mode.emit())
+        refresh_action.triggered.connect(lambda: self.refresh_view.emit())
     
     
     @catch_exceptions
@@ -89,7 +90,7 @@ class MenuBar(QMenuBar):
         bookmarks_menu.addActions([add_bookmark, toggle_bookmark])
         
         # Connect actions to signals
-        add_bookmark.triggered.connect(self.add_bookmark)
+        add_bookmark.triggered.connect(self.add_current_dir_bookmark_signal)
         toggle_bookmark.triggered.connect(self.toggle_bookmark)
     
     
