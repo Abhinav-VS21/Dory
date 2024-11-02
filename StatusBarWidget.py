@@ -1,7 +1,11 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSlider, QLabel
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt , Signal
 
 class StatusBarWidget(QWidget):
+    # Signals
+    icon_size = Signal(int)  
+    toggle_bookmark = Signal()
+    hide_sidebar = Signal()
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -33,6 +37,11 @@ class StatusBarWidget(QWidget):
         # Set the layout for this widget
         self.setLayout(layout)
 
+        # Connect signals to slots
+        self.toggle_bookmark_button.clicked.connect(self.toggle_bookmark.emit)
+        self.hide_sidebar_button.clicked.connect(self.hide_sidebar.emit)
+        self.icon_size_slider.valueChanged.connect(self.icon_size.emit)
+        
     def update_status(self, message):
         """updates the status message shown in the status bar."""
         

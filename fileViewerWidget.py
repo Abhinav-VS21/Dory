@@ -1,11 +1,11 @@
 from PySide6.QtWidgets import  (QListView , QFileSystemModel ,QMenu , QMessageBox , QDialog , QLabel , QVBoxLayout , QPushButton ,QFormLayout)
-from PySide6.QtCore import QDir , Signal , Qt , QFile 
+from PySide6.QtCore import QDir , Signal , Qt , QFile , QSize
 from PySide6.QtGui import QAction
 import os
 import random
 import time
 import sys
-import subprocess
+import subprocess   
 
 class FileListViewer(QListView):
     #Signals
@@ -141,12 +141,13 @@ class FileListViewer(QListView):
         
     def setIconView(self):
         self.setViewMode(QListView.IconMode)
+        self.setGridSize(QSize(70,70))
         self.setResizeMode(QListView.Adjust)
-        self.setWordWrap(True)
-        self.refreshView()
+        self.setFlow(QListView.LeftToRight)
         
     def setListView(self):
         self.setViewMode(QListView.ListMode)
+        self.setGridSize(QSize())
         self.setResizeMode(QListView.Adjust)
         self.setWordWrap(True)
         self.refreshView()
