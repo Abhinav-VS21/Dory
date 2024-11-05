@@ -22,7 +22,7 @@ class DirectoryTree(QTreeView):
             
         self.dir_system_model.setFilter( QDir.NoDotAndDotDot | QDir.AllDirs)
         
-         # Disable user resizing
+        # Disable user resizing
         header = self.header()
         header.setSectionsMovable(False)
         header.setSectionResizeMode(QHeaderView.ResizeToContents)
@@ -30,13 +30,12 @@ class DirectoryTree(QTreeView):
         #Connection Double Clicked
         self.doubleClicked.connect(self.onDoubleClicked)
         
-        # Defining the slots
+    # Methods
     @catch_exceptions
     def refreshView(self):
         """Refreshes the view to reflect any changes in the current directory."""
         
         self.dir_system_model.setRootPath(self.dir_system_model.rootPath())
-        
         
     @catch_exceptions   
     def traverseDirectoryTree(self , directory):
@@ -46,8 +45,6 @@ class DirectoryTree(QTreeView):
         Args:
             directory (str): The path to the directory to expand to.
         """
-        
-     
         root_path = QDir(self.dir_system_model.rootPath())
         print('root_path:', root_path.absolutePath())
         print('directory:', directory)
@@ -72,18 +69,18 @@ class DirectoryTree(QTreeView):
             index = self.dir_system_model.index(path)
             self.setExpanded(index, True)
             
-    
     @catch_exceptions        
     def onDoubleClicked(self,index):
         """Handles double-click events on directories."""
          
         dir_path = self.dir_system_model.filePath(index)
         self.dir_double_clicked.emit(dir_path)
+        print('emits signal:', dir_path)
     
-    
+    #Slots
     @catch_exceptions
-    def setNewRootIndex(self, path):
-        """Sets the current directory to the given path."""
+    def traverseDirectoryPath(self, path):
+        """traverses the directory given in string."""
         
         index = self.dir_system_model.index(path)
         self.traverseDirectoryTree(path)
@@ -91,12 +88,32 @@ class DirectoryTree(QTreeView):
     @catch_exceptions    
     def hideSelf(self):
         """Hides the DirectoryTree widget."""
-        
         self.hide()
      
-    
     @catch_exceptions   
     def showSelf(self):
         """Shows the DirectoryTree widget."""
-        
         self.show()
+    
+
+
+
+# from PySide6.QtWidgets import QApplication , QMainWindow , QWidget , QVBoxLayout
+# if __name__ == "__main__":
+
+#     app = QApplication([])
+    
+#     main_window = QMainWindow()
+#     main_window.setWindowTitle("Directory Tree View")
+    
+#     central_widget = QWidget()
+#     main_layout = QVBoxLayout(central_widget)
+    
+#     directory_tree = DirectoryTree()
+#     main_layout.addWidget(directory_tree)
+    
+#     main_window.setCentralWidget(central_widget)
+#     main_window.resize(800, 600)
+#     main_window.show()
+    
+#     app.exec()

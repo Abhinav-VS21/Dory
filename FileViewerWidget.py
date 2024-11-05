@@ -55,8 +55,7 @@ class FileListViewer(QListView):
             self.open_folder.emit(path)
         else:
             self.open_file.emit(path)
-            
-            
+                   
     @catch_exceptions
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
@@ -129,8 +128,7 @@ class FileListViewer(QListView):
             
         # Show the context menu at the cursor position
         menu.exec(event.globalPos())
-            
-            
+                 
     @catch_exceptions
     def setNewRootIndex(self, directory : str):
         """Sets the new root index of the file list viewer"""
@@ -144,20 +142,17 @@ class FileListViewer(QListView):
         
         self.setRootIndex(newRootIndex)
         print('The new root index is set to: ',newRootIndex)
-        
-        
+           
     @catch_exceptions
     def refreshView(self):
         self.directory_model.setRootPath(self.directory_model.rootPath())
 
-        
     @catch_exceptions
     def setIconView(self):
         self.setViewMode(QListView.IconMode)
         self.setGridSize(QSize(70,70))
         self.setResizeMode(QListView.Adjust)
         self.setFlow(QListView.LeftToRight)
-        
         
     @catch_exceptions
     def setListView(self):
@@ -166,15 +161,13 @@ class FileListViewer(QListView):
         self.setResizeMode(QListView.Adjust)
         self.setWordWrap(True)
         self.refreshView()
-        
-        
+          
     @catch_exceptions
     def changeIconSize(self,size:int):
         """Change icon size in QListView if in IconMode."""
         if self.viewMode() == QListView.IconMode :
             self.setIconSize(QSize(size,size))
-            
-        
+                
     @catch_exceptions
     def getCurrentDirectoryPath(self):
         return self.directory_model.filePath(self.rootIndex())

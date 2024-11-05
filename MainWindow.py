@@ -101,20 +101,20 @@ class MainWindow(QMainWindow):
         self.address_bar_widget.run_search.connect(lambda: self.triggerInputSearch())
         self.address_bar_widget.to_icon_mode.connect(lambda: self.file_viewer.setIconView())
         self.address_bar_widget.to_list_mode.connect(lambda: self.file_viewer.setListView())
-        self.address_bar_widget.address_path_changed.connect(lambda path: self.setRootIndex(path))
+        self.address_bar_widget.address_path_changed.connect(lambda path: self.setRootIndexWithTraversal(path))
 
         # Bookmark widget signals
-        self.bookmark_tree.open_in_cur_window.connect(lambda bookmark_path : self.setRootIndex(bookmark_path))
+        self.bookmark_tree.open_in_cur_window.connect(lambda bookmark_path : self.setRootIndexWithTraversal(bookmark_path))
         self.bookmark_tree.open_in_new_window.connect(lambda bookmark_path : self.openInNewWindow(bookmark_path))
 
 
         # Directory tree signals
-        self.directory_tree.dir_double_clicked.connect(lambda path : self.setRootIndex(path))
+        self.directory_tree.dir_double_clicked.connect(lambda path : self.setRootIndexWithNoTraversal(path))
 
 
         # File viewer signals
         self.file_viewer.open_file.connect(lambda file_path : self.openFile(file_path))
-        self.file_viewer.open_folder.connect(lambda path : self.setRootIndex(path))
+        self.file_viewer.open_folder.connect(lambda path : self.setRootIndexWithTraversal(path))
         self.file_viewer.open_in_new_window.connect(lambda path : self.openInNewWindow(path))
         self.file_viewer.copy_file_signal.connect(lambda path : self.copyFile(path))
         self.file_viewer.cut_file_signal.connect(lambda path : self.cutFile(path))
@@ -129,7 +129,7 @@ class MainWindow(QMainWindow):
         self.menu_bar.refresh_view.connect(lambda : self.refreshView())
         self.menu_bar.to_icon_mode.connect(lambda : self.file_viewer.setIconView())
         self.menu_bar.to_list_mode.connect(lambda : self.file_viewer.setListView())
-        self.menu_bar.change_directory.connect(lambda path : self.setRootIndex(path))
+        self.menu_bar.change_directory.connect(lambda path : self.setRootIndexWithTraversal(path))
         self.menu_bar.run_search_widget.connect(lambda : self.triggerInputSearch())
         self.menu_bar.add_current_dir_bookmark_signal.connect(lambda : self.addCurrentDirBookmark())
         self.menu_bar.toggle_bookmark.connect(lambda : self.toogleLeftSidebar())
@@ -147,7 +147,6 @@ class MainWindow(QMainWindow):
         self.status_bar_widget.hide_left_sidebar.connect(lambda : self.hideLeftSidebar())
         self.status_bar_widget.toggle_left_sidebar.connect(lambda : self.toogleLeftSidebar())
         
-    
     @catch_exceptions
     def setup_initial_state(self):
         self.search_input.setVisible(False)
@@ -165,10 +164,8 @@ class MainWindow(QMainWindow):
 
             # Navigate to the new path
             new_path = self.forward_stack.pop()
-            self.setRootIndex(new_path)
+            self.setRootIndexWithTraversal(new_path)
             
-    
-    
     @catch_exceptions
     def goBack(self):
         if self.back_stack:
@@ -179,12 +176,12 @@ class MainWindow(QMainWindow):
 
             # Navigate to the new path
             new_path = self.back_stack.pop()
-            self.setRootIndex(new_path)
+            self.setRootIndexWithTraversal(new_path)
     
-
     @catch_exceptions
-    def setRootIndex(self, path: str):
-        """Sets the root index to the specified path and manages history stacks."""
+    def setRootIndexWithTraversal(self, path: str):
+        """Sets the root index to the specified path and manages 
+        history stacks and expands the directory tree view too"""
         
         # Store the current path in the back stack if it's a new navigation
         current_path = self.file_viewer.getCurrentDirectoryPath()
@@ -197,7 +194,24 @@ class MainWindow(QMainWindow):
 
         # Set the new root index in both the file viewer and directory tree
         self.file_viewer.setNewRootIndex(path)
-        self.directory_tree.setNewRootIndex(path)
+        self.directory_tree.traverseDirectoryPath(path)
+        
+    def setRootIndexWithNoTraversal(self,path:str):
+        '''sets the root index to the specified path and manages history stacks with no traversal'''
+        
+        # Store the current path in the back stack if it's a new navigation
+        current_path = self.file_viewer.getCurrentDirectoryPath()
+        if current_path and (not self.back_stack or self.back_stack[-1] != current_path):
+            self.back_stack.append(current_path)
+            
+        # Clear forward stack if this navigation is from a new source
+        if not self.forward_stack or self.forward_stack[-1] != path:
+            self.forward_stack.clear()
+
+        # Set the new root index in both the file viewer and directory tree
+        self.file_viewer.setNewRootIndex(path)
+        
+        
         
     @catch_exceptions
     def triggerInputSearch(self):
@@ -209,7 +223,6 @@ class MainWindow(QMainWindow):
     def openInNewWindow(self, path : str = QDir.homePath()):
         """Function to create and show a new MainWindow."""
         new_window = MainWindow(root_dir=path)
-    
     
     @catch_exceptions
     def openFile(self , file_path : str):
@@ -225,7 +238,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"Error opening file: {e}")
     
-    
     @catch_exceptions
     def copyFile(self, path:str):
         """Copies the file path to the clipboard."""
@@ -233,7 +245,6 @@ class MainWindow(QMainWindow):
             raise FileNotFoundError(f"File not found: {path}")
         self.clipboard.setText(path)
         self.clipboard_mode = "copy"
-    
     
     @catch_exceptions
     def cutFile(self , path:str):
@@ -243,7 +254,6 @@ class MainWindow(QMainWindow):
             raise FileNotFoundError(f"File not found: {path}")
         self.clipboard.setText(path)
         self.clipboard_mode = "cut"
-    
     
     @catch_exceptions
     def copyFolder(self , path:str):
@@ -287,17 +297,14 @@ class MainWindow(QMainWindow):
                 self.clipboard.clear()  # Clear clipboard after moving
 
                 
-    
     @catch_exceptions
     def getCurrentDirectoryPath(self):
         return self.file_viewer.getCurrentDirectoryPath()
-    
     
     @catch_exceptions
     def refreshView(self):
         self.directory_tree.refreshView()
         self.file_viewer.refreshView()
-    
     
     @catch_exceptions
     def toogleLeftSidebar(self):
@@ -308,13 +315,13 @@ class MainWindow(QMainWindow):
         
         self.bookmark_tree.setVisible(not self.bookmark_tree.setVisible())
         self.directory_tree.setVisible(not self.directory_tree.setVisible())
-            
-            
+                    
     @catch_exceptions
     def hideLeftSidebar(self):
         self.bookmark_tree.setVisible(False)
         self.directory_tree.setVisible(False)
     
+    @catch_exceptions
     def toggleRightSidebar(self):
         self.search_input.setVisible(not self.search_input.isVisible())
         self.search_result.setVisible(not self.search_result.isVisible())
@@ -348,7 +355,7 @@ class MainWindow(QMainWindow):
         self.search_result.setVisible(False)
         self.search_input.setVisible(False)
         self.file_viewer.setVisible(True)
-        self.setRootIndex(path)
+        self.setRootIndexWithTraversal(path)
         
 from PySide6.QtWidgets import QApplication
 from MainWindow import MainWindow
