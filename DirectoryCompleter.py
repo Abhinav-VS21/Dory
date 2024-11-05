@@ -1,7 +1,10 @@
 from PySide6.QtWidgets import QCompleter, QLineEdit
 from PySide6.QtCore import Qt, QDir , QStringListModel  ,QFileInfo
+from catchExecptions import catch_exceptions
 
 class DirectoryCompleter:
+    
+    @catch_exceptions
     def __init__(self, line_edit: QLineEdit, parent=None):
         self.completer = QCompleter(parent)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
@@ -12,7 +15,7 @@ class DirectoryCompleter:
         self.line_edit.textChanged.connect(self.updateCompleter)
 
         
-
+    @catch_exceptions
     def updateCompleter(self):
         # Get the current text from the QLineEdit
         current_text = self.line_edit.text()
@@ -35,14 +38,22 @@ class DirectoryCompleter:
             # Set the model for the completer
             self.completer.setModel(QStringListModel(full_paths))
 
+
+    @catch_exceptions
     def setDefaultPath(self, path: str):
         self.default_path = QDir.toNativeSeparators(QDir(path).absolutePath())
 
+
+    @catch_exceptions
     def setCompletionMode(self, mode: QCompleter.CompletionMode):
         self.completer.setCompletionMode(mode)
 
+
+    @catch_exceptions
     def setFilterMode(self, mode: Qt.MatchFlag):
         self.completer.setFilterMode(mode)
 
+
+    @catch_exceptions
     def setCaseSensitivity(self, sensitive: bool):
         self.completer.setCaseSensitivity(Qt.CaseSensitive if sensitive else Qt.CaseInsensitive)
