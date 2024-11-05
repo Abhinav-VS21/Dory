@@ -16,13 +16,13 @@ import platform
 import shutil
 
 class DoryWindow(QMainWindow):
-    def __init__(self , init_root_dir = QDir.homePath()):
+    def __init__(self , init_root_dir = QDir.homePath() , current_dir = QDir.homePath()):
         super().__init__()
 
         self.setWindowTitle("Dory")
         self.setMinimumSize(800 , 600)
         self.init_root_dir = init_root_dir
-        self.current_dir = init_root_dir
+        self.current_dir = current_dir
 
         self.initLayout()
         self.definingFileConnections()
@@ -95,8 +95,14 @@ class DoryWindow(QMainWindow):
         self.status_bar_widget.setVisible(True)
         self.address_bar_widget.setVisible(True)    
         
+        
+        # initializing the window 
+        self.setRootIndexWithTraversal(self.current_dir)
+        
     def definingFileConnections(self):
         self.file_viewer.open_folder.connect(lambda folder_path : self.setRootIndexWithTraversal(folder_path))
+        self.file_viewer.open_in_new_window.connect(lambda folder_path: self.openNewWindow(folder_path))
+        
     
     # defining actions and slots
     @catch_exceptions
@@ -104,6 +110,10 @@ class DoryWindow(QMainWindow):
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
         self.directory_tree.traverseDirectoryTree(folder_path)
+    
+    def openNewWindow(self , folder_path):
+        new_window = DoryWindow(init_root_dir=QDir.homePath() , current_dir=folder_path)
+        new_window.show()
         
 # Running Application
 if __name__ == "__main__":
