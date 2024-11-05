@@ -130,10 +130,8 @@ class FileListViewer(QListView):
         menu.exec(event.globalPos())
                  
     @catch_exceptions
-    def setNewRootIndex(self, directory : str):
-        """Sets the new root index of the file list viewer"""
-        # Debugging
-        print('Setting new root index to: ',directory) 
+    def updateRootIndex(self, directory : str):
+        """Sets the new root index of the file list viewer""" 
          
         newRootIndex = self.directory_model.index(directory)
         if not newRootIndex.isValid():
@@ -141,8 +139,7 @@ class FileListViewer(QListView):
             return
         
         self.setRootIndex(newRootIndex)
-        print('The new root index is set to: ',newRootIndex)
-           
+                  
     @catch_exceptions
     def refreshView(self):
         self.directory_model.setRootPath(self.directory_model.rootPath())
@@ -363,7 +360,7 @@ class FileListViewer(QListView):
         self.refreshView()
 
     @catch_exceptions
-    def setNewRootIndex(self, directory: str):
+    def updateRootIndex(self, directory: str):
         """Sets the new root index of the file list viewer."""
         new_root_index = self.directory_model.index(directory)
         if not new_root_index.isValid():

@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
             self.forward_stack.clear()
 
         # Set the new root index in both the file viewer and directory tree
-        self.file_viewer.setNewRootIndex(path)
+        self.file_viewer.updateRootIndex(path)
         self.directory_tree.traverseDirectoryPath(path)
         
     def setRootIndexWithNoTraversal(self,path:str):
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
             self.forward_stack.clear()
 
         # Set the new root index in both the file viewer and directory tree
-        self.file_viewer.setNewRootIndex(path)
+        self.file_viewer.updateRootIndex(path)
         
         
         

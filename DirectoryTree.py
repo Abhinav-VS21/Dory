@@ -45,12 +45,11 @@ class DirectoryTree(QTreeView):
         Args:
             directory (str): The path to the directory to expand to.
         """
+        
         root_path = QDir(self.dir_system_model.rootPath())
-        print('root_path:', root_path.absolutePath())
-        print('directory:', directory)
 
         relative_path = root_path.relativeFilePath(directory)
-        print('relative_path:', relative_path)
+        
 
         traversal = []
 
@@ -62,8 +61,6 @@ class DirectoryTree(QTreeView):
             if part:  
                 current_path.cd(part)  
                 traversal.append(current_path.absolutePath())  
-
-        print('traversal:', traversal)
 
         for path in traversal:
             index = self.dir_system_model.index(path)

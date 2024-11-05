@@ -102,7 +102,7 @@ class DoryWindow(QMainWindow):
     @catch_exceptions
     def setRootIndexWithTraversal(self , folder_path):
         self.current_dir = folder_path
-        self.file_viewer.setRootIndex(folder_path)
+        self.file_viewer.updateRootIndex(folder_path)
         self.directory_tree.traverseDirectoryTree(folder_path)
         
 # Running Application
