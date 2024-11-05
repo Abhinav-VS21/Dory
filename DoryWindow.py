@@ -25,7 +25,7 @@ class DoryWindow(QMainWindow):
         self.current_dir = init_root_dir
 
         self.initLayout()
-        
+        self.definingFileConnections()
     def initLayout(self):
         # Creating widgets
         
@@ -95,8 +95,16 @@ class DoryWindow(QMainWindow):
         self.status_bar_widget.setVisible(True)
         self.address_bar_widget.setVisible(True)    
         
-        
+    def definingFileConnections(self):
+        self.file_viewer.open_folder.connect(lambda folder_path : self.setRootIndexWithTraversal(folder_path))
     
+    # defining actions and slots
+    @catch_exceptions
+    def setRootIndexWithTraversal(self , folder_path):
+        self.current_dir = folder_path
+        self.file_viewer.setRootIndex(folder_path)
+        self.directory_tree.traverseDirectoryTree(folder_path)
+        
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication([])

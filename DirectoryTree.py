@@ -78,12 +78,6 @@ class DirectoryTree(QTreeView):
         print('emits signal:', dir_path)
     
     #Slots
-    @catch_exceptions
-    def traverseDirectoryPath(self, path):
-        """traverses the directory given in string."""
-        
-        index = self.dir_system_model.index(path)
-        self.traverseDirectoryTree(path)
     
     @catch_exceptions    
     def hideSelf(self):
