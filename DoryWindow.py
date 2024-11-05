@@ -117,7 +117,10 @@ class DoryWindow(QMainWindow):
         self.file_viewer.open_file.connect(lambda file_path : self.openFile(file_path))
         self.file_viewer.copy_file_signal.connect(lambda file_path : self.copyFile(file_path))
         self.file_viewer.cut_file_signal.connect(lambda file_path : self.cutFile(file_path))
+        self.file_viewer.copy_folder_signal.connect(lambda folder_path : self.copyFolder(folder_path))
+        self.file_viewer.cut_folder_signal.connect(lambda folder_path : self.cutFolder(folder_path))
         self.file_viewer.paste_signal.connect(lambda target_directory : self.paste(target_directory))
+        
     def directoryConnections(self):
         self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
         # self.directory_tree.dir_right_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))  to be implemented
@@ -170,33 +173,58 @@ class DoryWindow(QMainWindow):
         if not os.path.exists(path):
             raise FileNotFoundError(f"File not found: {path}")
         
-        
         self.clipboard.setText(path)
         self.clipboard_mode = "cut"
         
     @catch_exceptions
+    def copyFolder(self , folder_path:str):
+        """Copies the folder to the clipboard."""
+        
+        if not os.path.exists(folder_path):
+            raise FileNotFoundError(f"Folder does not exist: {folder_path}")
+        
+        self.clipboard.setText(folder_path)
+        self.clipboard_mode = "copy"
+        
+    @catch_exceptions 
+    def cutFolder(self , folder_path:str):
+        """Cuts the folder to the clipboard."""
+        
+        if not os.path.exists(folder_path):
+            raise FileNotFoundError(f"Folder does not exist: {folder_path}")
+        
+        self.clipboard.setText(folder_path)
+        self.clipboard_mode = "cut"
+     
+    @catch_exceptions
     def paste(self, target_directory: str):
-            """Pastes the file or folder from the clipboard into the target directory."""
-            source_path = self.clipboard.text()
-            print(source_path)
-            
-            if not source_path or not os.path.exists(source_path):
-                raise FileNotFoundError("No file or folder in clipboard to paste")
-                
+        """Pastes the file or folder from the clipboard into the target directory."""
+        source_path = self.clipboard.text()
+        
+        print(f"Source Path: {source_path}")
+        
+        if not source_path or not os.path.exists(source_path):
+            raise FileNotFoundError("No valid file or folder in clipboard to paste")
+        
+        # Define the destination path (same name as source but in target directory)
+        destination_path = os.path.join(target_directory, os.path.basename(source_path))
+        
+        # Handle the copy or move operation based on clipboard mode
+        if self.clipboard_mode == "copy":
+            if os.path.isfile(source_path):
+                shutil.copy2(source_path, destination_path)  # Copy file
+            elif os.path.isdir(source_path):
+                shutil.copytree(source_path, destination_path)  # Copy directory (recursively)
+        
+        elif self.clipboard_mode == "cut":
+            if os.path.isdir(source_path):
+                shutil.move(source_path, destination_path)  # Move directory
+            elif os.path.isfile(source_path):
+                shutil.move(source_path, destination_path)  # Move file
 
-            # Define destination path
-            destination_path = os.path.join(target_directory, os.path.basename(source_path))
-
-            
-            if self.clipboard_mode == "copy":
-                if os.path.isfile(source_path):
-                    shutil.copy2(source_path, destination_path)
-                elif os.path.isdir(source_path):
-                    shutil.copytree(source_path, destination_path)
-            elif self.clipboard_mode == "cut":
-                shutil.move(source_path, destination_path)
-                
-            self.clipboard.clear()  # Clear clipboard after moving
+        # Clear clipboard after pasting
+        self.clipboard.clear()  
+        print(f"Pasted {source_path} to {destination_path}")
 
     
 # Running Application
