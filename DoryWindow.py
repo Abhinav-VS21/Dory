@@ -25,6 +25,9 @@ class DoryWindow(QMainWindow):
         self.current_dir = current_dir
 
         self.initLayout()
+        self.initWindow()
+        
+        # Connecting Signals and Slots
         self.fileConnections()
         self.directoryConnections()
         
@@ -88,6 +91,8 @@ class DoryWindow(QMainWindow):
         self.setCentralWidget(central_widget)
         self.setMenuBar(self.menu_bar)
         
+        
+    def initWindow(self):
         # Setting up the initial stage
         self.search_input.setVisible(False)
         self.search_result.setVisible(False)
@@ -101,10 +106,18 @@ class DoryWindow(QMainWindow):
         # initializing the window 
         self.updateRootIndexWithTraversal(self.current_dir)
         
+        # Creating Clipboard
+        self.clipboard = QApplication.clipboard()
+        self.clipboard_mode = None
+        
+        
     def fileConnections(self):
         self.file_viewer.open_folder.connect(lambda folder_path : self.updateRootIndexWithTraversal(folder_path))
         self.file_viewer.open_in_new_window.connect(lambda folder_path: self.openNewWindow(folder_path))
         self.file_viewer.open_file.connect(lambda file_path : self.openFile(file_path))
+        self.file_viewer.copy_file_signal.connect(lambda file_path : self.copyFile(file_path))
+        self.file_viewer.cut_file_signal.connect(lambda file_path : self.cutFile(file_path))
+        self.file_viewer.paste_signal.connect(lambda target_directory : self.paste(target_directory))
     def directoryConnections(self):
         self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
         # self.directory_tree.dir_right_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))  to be implemented
@@ -140,6 +153,52 @@ class DoryWindow(QMainWindow):
         else:
             subprocess.Popen(["xdg-open" , file_path])
             
+    @catch_exceptions
+    def copyFile(self , file_path:str):
+        """Copies the file to the clipboard."""
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"File does not exist: {file_path}")
+        
+        
+        self.clipboard.setText(file_path)
+        self.clipboard_mode = "copy"
+        
+    @catch_exceptions
+    def cutFile(self , path:str):
+        """Cuts the file path to the clipboard."""
+        
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"File not found: {path}")
+        
+        
+        self.clipboard.setText(path)
+        self.clipboard_mode = "cut"
+        
+    @catch_exceptions
+    def paste(self, target_directory: str):
+            """Pastes the file or folder from the clipboard into the target directory."""
+            source_path = self.clipboard.text()
+            print(source_path)
+            
+            if not source_path or not os.path.exists(source_path):
+                raise FileNotFoundError("No file or folder in clipboard to paste")
+                
+
+            # Define destination path
+            destination_path = os.path.join(target_directory, os.path.basename(source_path))
+
+            
+            if self.clipboard_mode == "copy":
+                if os.path.isfile(source_path):
+                    shutil.copy2(source_path, destination_path)
+                elif os.path.isdir(source_path):
+                    shutil.copytree(source_path, destination_path)
+            elif self.clipboard_mode == "cut":
+                shutil.move(source_path, destination_path)
+                
+            self.clipboard.clear()  # Clear clipboard after moving
+
+    
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication([])
