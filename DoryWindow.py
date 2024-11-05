@@ -25,7 +25,9 @@ class DoryWindow(QMainWindow):
         self.current_dir = current_dir
 
         self.initLayout()
-        self.definingFileConnections()
+        self.fileConnections()
+        self.directoryConnections()
+        
     def initLayout(self):
         # Creating widgets
         
@@ -97,24 +99,47 @@ class DoryWindow(QMainWindow):
         
         
         # initializing the window 
-        self.setRootIndexWithTraversal(self.current_dir)
+        self.updateRootIndexWithTraversal(self.current_dir)
         
-    def definingFileConnections(self):
-        self.file_viewer.open_folder.connect(lambda folder_path : self.setRootIndexWithTraversal(folder_path))
+    def fileConnections(self):
+        self.file_viewer.open_folder.connect(lambda folder_path : self.updateRootIndexWithTraversal(folder_path))
         self.file_viewer.open_in_new_window.connect(lambda folder_path: self.openNewWindow(folder_path))
-        
-    
+        self.file_viewer.open_file.connect(lambda file_path : self.openFile(file_path))
+    def directoryConnections(self):
+        self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
+        # self.directory_tree.dir_right_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))  to be implemented
+
     # defining actions and slots
     @catch_exceptions
-    def setRootIndexWithTraversal(self , folder_path):
+    def updateRootIndexWithTraversal(self , folder_path):
+        """Updates the root index of the file viewer and traverses the directory tree."""
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
         self.directory_tree.traverseDirectoryTree(folder_path)
     
+    @catch_exceptions
+    def updateRootIndex(self , folder_path):
+        """
+        On Double Clicking the Directory Tree
+        Updates the root index of the file viewer.
+        """
+        self.current_dir = folder_path
+        self.file_viewer.updateRootIndex(folder_path)
+        
+    @catch_exceptions
     def openNewWindow(self , folder_path):
         new_window = DoryWindow(init_root_dir=QDir.homePath() , current_dir=folder_path)
         new_window.show()
         
+    @catch_exceptions
+    def openFile(self , file_path:str):
+        if platform.system() == "Windows":
+            os.startfile(file_path)
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open" , file_path])
+        else:
+            subprocess.Popen(["xdg-open" , file_path])
+            
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication([])
