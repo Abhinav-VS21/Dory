@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self, root_dir = QDir.homePath()):
         super().__init__()
         self.root_dir = root_dir
-        self.setWindowTitle("Glance File Manager")
+        self.setWindowTitle("Dory")
         self.setGeometry(100, 100, 800, 600)
         
         # History stacks
