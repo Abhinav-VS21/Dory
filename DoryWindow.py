@@ -31,6 +31,7 @@ class DoryWindow(QMainWindow):
         self.fileConnections()
         self.directoryConnections()
         self.bookmarkConnections()
+        self.menubarConnections()
         
     def initLayout(self):
         # Creating widgets
@@ -130,6 +131,9 @@ class DoryWindow(QMainWindow):
     def bookmarkConnections(self):
         self.bookmark_tree.open_in_cur_window.connect(lambda path : self.updateRootIndexWithTraversal(path))
         self.bookmark_tree.open_in_new_window.connect(lambda path : self.openNewWindow(path))
+       
+    def menubarConnections(self):
+        self.menu_bar.open_bookmark.connect(lambda: self.showBookmarkTree())
         
     
     # defining actions and slots
@@ -235,7 +239,17 @@ class DoryWindow(QMainWindow):
         self.clipboard.clear()  
         print(f"Pasted {source_path} to {destination_path}")
 
-    
+    @catch_exceptions
+    def showBookmarkTree(self):
+        """Shows the bookmark tree widget."""
+        self.bookmark_tree.setVisible(True)
+        self.directory_tree.setVisible(False)
+        
+    @catch_exceptions
+    def toggleBookmarkDirectory(self):
+        """Toggles the bookmark tree visibility."""
+        self.bookmark_tree.setVisible(not self.bookmark_tree.isVisible())
+        self.directory_tree.setVisible(not self.directory_tree.isVisible())
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication([])
