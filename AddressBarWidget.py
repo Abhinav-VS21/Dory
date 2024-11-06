@@ -88,6 +88,11 @@ class AddressBarWidget(QWidget):
     def updateAddress(self, path):
         """emits the address_path_changed signal with the given path."""
         self.address_path_changed.emit(path)
+        
+    @catch_exceptions
+    def updatePlaceholder(self, text):
+        """Updates the placeholder text of the AddressBar."""
+        self.address_bar.setPlaceholderText(text)
 
 
 #debug

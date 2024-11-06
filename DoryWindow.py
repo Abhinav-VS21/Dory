@@ -30,6 +30,7 @@ class DoryWindow(QMainWindow):
         # Connecting Signals and Slots
         self.fileConnections()
         self.directoryConnections()
+        self.bookmarkConnections()
         
     def initLayout(self):
         # Creating widgets
@@ -120,11 +121,17 @@ class DoryWindow(QMainWindow):
         self.file_viewer.copy_folder_signal.connect(lambda folder_path : self.copyFolder(folder_path))
         self.file_viewer.cut_folder_signal.connect(lambda folder_path : self.cutFolder(folder_path))
         self.file_viewer.paste_signal.connect(lambda target_directory : self.paste(target_directory))
+        self.file_viewer.add_bookmark_path.connect(lambda name,  path : self.bookmark_tree.addBookmark(name,path))
         
     def directoryConnections(self):
         self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
         # self.directory_tree.dir_right_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))  to be implemented
 
+    def bookmarkConnections(self):
+        self.bookmark_tree.open_in_cur_window.connect(lambda path : self.updateRootIndexWithTraversal(path))
+        self.bookmark_tree.open_in_new_window.connect(lambda path : self.openNewWindow(path))
+        
+    
     # defining actions and slots
     @catch_exceptions
     def updateRootIndexWithTraversal(self , folder_path):
@@ -132,6 +139,7 @@ class DoryWindow(QMainWindow):
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
         self.directory_tree.traverseDirectoryTree(folder_path)
+        self.address_bar_widget.updatePlaceholder(folder_path)
     
     @catch_exceptions
     def updateRootIndex(self , folder_path):
@@ -141,6 +149,7 @@ class DoryWindow(QMainWindow):
         """
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
+        self.address_bar_widget.updatePlaceholder(folder_path)
         
     @catch_exceptions
     def openNewWindow(self , folder_path):
