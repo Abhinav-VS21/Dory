@@ -16,7 +16,7 @@ import platform
 import shutil
 
 class DoryWindow(QMainWindow):
-    def __init__(self , init_root_dir = QDir.homePath() , current_dir = QDir.homePath()):
+    def __init__(self , init_root_dir : str = QDir.homePath() , current_dir : str = QDir.homePath()):
         super().__init__()
 
         self.setWindowTitle("Dory")
@@ -134,7 +134,10 @@ class DoryWindow(QMainWindow):
        
     def menubarConnections(self):
         self.menu_bar.open_bookmark.connect(lambda: self.showBookmarkTree())
-        
+        self.menu_bar.open_new_window.connect(lambda : self.openNewWindow(self.current_dir))
+        self.menu_bar.refresh_view.connect(lambda : self.refreshView())
+        self.menu_bar.to_icon_mode.connect(lambda : self.setIconView())
+        self.menu_bar.to_list_mode.connect(lambda : self.setListView())
     
     # defining actions and slots
     @catch_exceptions
@@ -250,6 +253,24 @@ class DoryWindow(QMainWindow):
         """Toggles the bookmark tree visibility."""
         self.bookmark_tree.setVisible(not self.bookmark_tree.isVisible())
         self.directory_tree.setVisible(not self.directory_tree.isVisible())
+
+    @catch_exceptions
+    def refreshView(self):
+        """Refreshes the file viewer."""
+        self.file_viewer.refreshView()
+        self.directory_tree.refreshView()
+        print("Refreshed view")
+    
+    @catch_exceptions
+    def setIconView(self):
+        """Switches the file viewer to icon view."""
+        self.file_viewer.setIconView()
+        
+    @catch_exceptions
+    def setListView(self):
+        """Switches the file viewer to list view."""
+        self.file_viewer.setListView()
+    
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication([])

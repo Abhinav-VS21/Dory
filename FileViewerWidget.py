@@ -157,7 +157,7 @@ class FileListViewer(QListView):
         self.setGridSize(QSize())
         self.setResizeMode(QListView.Adjust)
         self.setWordWrap(True)
-        self.refreshView()
+        self.setFlow(QListView.TopToBottom)
           
     @catch_exceptions
     def changeIconSize(self,size:int):
