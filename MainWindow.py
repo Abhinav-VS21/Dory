@@ -133,8 +133,8 @@ class MainWindow(QMainWindow):
         self.menu_bar.run_search_widget.connect(lambda : self.triggerInputSearch())
         self.menu_bar.add_current_dir_bookmark_signal.connect(lambda : self.addCurrentDirBookmark())
         self.menu_bar.open_bookmark.connect(lambda : self.toogleLeftSidebar())
-        self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createFile())
-        self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createFolder())
+        self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createNewFile())
+        self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createNewFolder())
         self.menu_bar.open_dir_properties.connect(lambda : self.file_viewer.currDirProperties())
         
         

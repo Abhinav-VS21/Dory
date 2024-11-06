@@ -120,8 +120,8 @@ class FileListViewer(QListView):
                              curr_dir_properties_action])
             
             paste_action.triggered.connect(self.paste)
-            create_file_action.triggered.connect(lambda: self.createFile())
-            create_folder_action.triggered.connect(lambda: self.createFolder())
+            create_file_action.triggered.connect(lambda: self.createNewFile())
+            create_folder_action.triggered.connect(lambda: self.createNewFolder())
             open_in_terminal_action.triggered.connect(lambda: self.openInTerminal())
             show_hidden_files_action.triggered.connect(lambda: self.showHiddenFiles())
             curr_dir_properties_action.triggered.connect(lambda: self.currDirProperties())
@@ -182,7 +182,7 @@ class FileListViewer(QListView):
     
     # File operations
     @catch_exceptions
-    def createFile(self):
+    def createNewFile(self):
         current_dir = self.getCurrentDirectoryPath()
         random_file_name = 'new_file' + str(random.randint(1,1000)) + '.txt'
         full_path = os.path.join(current_dir, random_file_name)
@@ -254,7 +254,7 @@ class FileListViewer(QListView):
     
     # Folder operations
     @catch_exceptions
-    def createFolder(self):
+    def createNewFolder(self):
         current_dir = self.getCurrentDirectoryPath()
         random_folder_name = 'new_folder' + str(random.randint(1,1000))
         full_path = os.path.join(current_dir, random_folder_name)
@@ -268,7 +268,7 @@ class FileListViewer(QListView):
             QMessageBox.critical(self, "Error", f"Failed to create folder: {str(e)}")
         
     
-    @catch_exceptions
+    
     def renameFolder(self,index):
         ''' Puts the selected folder in rename mode '''
         if index.isValid():

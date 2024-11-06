@@ -140,7 +140,9 @@ class DoryWindow(QMainWindow):
         self.menu_bar.to_list_mode.connect(lambda : self.setListView())
         self.menu_bar.change_directory.connect(lambda path: self.updateRootIndexWithTraversal(path))
         self.menu_bar.run_search_widget.connect(lambda: self.search_input.setVisible(not self.search_input.isVisible()))
-        self.menu_bar.add_current_dir_bookmark_signal.connect(lambda name : self.bookmark_tree.addBookmark(name , self.current_dir))
+        self.menu_bar.add_current_dir_bookmark_signal.connect(lambda : self.bookmark_tree.addBookmark(self.current_dir , os.path.basename(self.current_dir) ))
+        self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createNewFile())
+        self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createNewFolder())
     
     # defining actions and slots
     @catch_exceptions
@@ -155,7 +157,7 @@ class DoryWindow(QMainWindow):
         # Show the directory tree and hide the bookmark tree
         self.directory_tree.setVisible(True)
         self.bookmark_tree.setVisible(False)
-        self.file_viewer.setVisible(False)
+        self.file_viewer.setVisible(True)
         self.search_result.setVisible(False)
     
     @catch_exceptions
@@ -280,6 +282,8 @@ class DoryWindow(QMainWindow):
     def setListView(self):
         """Switches the file viewer to list view."""
         self.file_viewer.setListView()
+        
+    
     
 # Running Application
 if __name__ == "__main__":
