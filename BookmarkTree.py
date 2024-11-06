@@ -152,7 +152,7 @@ class BookmarkTree(QTreeView):
            
     # slots
     @catch_exceptions
-    def addBookmark(self, name:str, path:str):
+    def addBookmark(self,path:str, name:str):
         """Adds a new bookmark to the tree and saves it persistently."""
         
         # Create a new item for the bookmark

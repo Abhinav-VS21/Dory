@@ -122,7 +122,7 @@ class DoryWindow(QMainWindow):
         self.file_viewer.copy_folder_signal.connect(lambda folder_path : self.copyFolder(folder_path))
         self.file_viewer.cut_folder_signal.connect(lambda folder_path : self.cutFolder(folder_path))
         self.file_viewer.paste_signal.connect(lambda target_directory : self.paste(target_directory))
-        self.file_viewer.add_bookmark_path.connect(lambda name,  path : self.bookmark_tree.addBookmark(name,path))
+        self.file_viewer.add_bookmark_path.connect(lambda path,name : self.bookmark_tree.addBookmark(path,name))
         
     def directoryConnections(self):
         self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
@@ -138,15 +138,25 @@ class DoryWindow(QMainWindow):
         self.menu_bar.refresh_view.connect(lambda : self.refreshView())
         self.menu_bar.to_icon_mode.connect(lambda : self.setIconView())
         self.menu_bar.to_list_mode.connect(lambda : self.setListView())
+        self.menu_bar.change_directory.connect(lambda path: self.updateRootIndexWithTraversal(path))
+        self.menu_bar.run_search_widget.connect(lambda: self.search_input.setVisible(not self.search_input.isVisible()))
+        self.menu_bar.add_current_dir_bookmark_signal.connect(lambda name : self.bookmark_tree.addBookmark(name , self.current_dir))
     
     # defining actions and slots
     @catch_exceptions
-    def updateRootIndexWithTraversal(self , folder_path):
+    def updateRootIndexWithTraversal(self , folder_path : str):
         """Updates the root index of the file viewer and traverses the directory tree."""
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
         self.directory_tree.traverseDirectoryTree(folder_path)
         self.address_bar_widget.updatePlaceholder(folder_path)
+        
+        
+        # Show the directory tree and hide the bookmark tree
+        self.directory_tree.setVisible(True)
+        self.bookmark_tree.setVisible(False)
+        self.file_viewer.setVisible(False)
+        self.search_result.setVisible(False)
     
     @catch_exceptions
     def updateRootIndex(self , folder_path):
