@@ -14,8 +14,8 @@ class SearchThread(QThread):
     @catch_exceptions
     def __init__(self ,  search_text:str ,  case_sensitive:bool , recursive_search:bool ,
                  full_match_search :bool, current_directory:str ,parent = None):
-        
         super().__init__(parent)
+        
         self.search_text = 'temp.py'
         self.case_sensitive = False
         self.recursive_search = True

@@ -1,10 +1,11 @@
 from PySide6.QtWidgets import  (QListView , QFileSystemModel ,QMenu ,
                                 QMessageBox , QDialog , QLabel , QVBoxLayout,
-                                QPushButton,QFormLayout)
+                                QPushButton,QFormLayout , QAbstractItemView)
 
 from PySide6.QtCore import QDir , Signal , Qt , QFile , QSize
 from PySide6.QtGui import QAction
 from catchExecptions import catch_exceptions
+from editableFileSystemModel import EditableFileSystemModel
 import os
 import random
 import time
@@ -32,13 +33,15 @@ class FileListViewer(QListView):
         
         
         # Setting up the directory model
-        self.directory_model = QFileSystemModel()
+        self.directory_model = EditableFileSystemModel()
         self.directory_model.setRootPath(root_directory)
         self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
         
         # Setting up the file list view
         self.setModel(self.directory_model)
         self.setRootIndex(self.directory_model.index(root_directory))
+        self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.SelectedClicked)
+
         
         
         # Defining connections
@@ -72,10 +75,11 @@ class FileListViewer(QListView):
                 delete_folder_action = QAction("Delete", self)             # Implimentation done in class
                 rename_folder_action = QAction("Rename", self)             # Implimentation done in class
                 properties_folder_action = QAction("Properties", self)     # Implimentation done in class
+                open_folder_in_terminal_action = QAction("Open in Terminal", self)  
                 
                 menu.addActions([open_folder_action, open_folder_new_window_action, 
                                  cut_folder_action, copy_folder_action, bookmark_action, 
-                                 delete_folder_action, rename_folder_action, properties_folder_action])
+                                 delete_folder_action, rename_folder_action, properties_folder_action , open_folder_in_terminal_action])
                 
                 open_folder_action.triggered.connect(lambda: self.open_folder.emit(self.directory_model.filePath(index)))
                 open_folder_new_window_action.triggered.connect(lambda: self.open_in_new_window.emit(self.directory_model.filePath(index)))
@@ -85,6 +89,7 @@ class FileListViewer(QListView):
                 delete_folder_action.triggered.connect(lambda: self.directory_model.rmdir(index))
                 rename_folder_action.triggered.connect(lambda: self.renameFolder(index))
                 properties_folder_action.triggered.connect(lambda: self.propertiesFolder(index))
+                open_folder_in_terminal_action.triggered.connect(lambda: self.openInTerminal(self.directory_model.filePath(index)))
             
             else:
                 
@@ -94,6 +99,7 @@ class FileListViewer(QListView):
                 rename_file_action = QAction("Rename", self)
                 delete_file_action = QAction("Delete", self)
                 properties_file_action = QAction("Properties", self)
+                open_file_in_terminal_action = QAction("Open in Terminal", self)
                 
                 menu.addActions([open_file_action, cut_file_action, copy_file_action, 
                                  rename_file_action, delete_file_action,
@@ -201,17 +207,22 @@ class FileListViewer(QListView):
 
         file_index = self.directory_model.index(full_path)
         self.renameFile(file_index)
-                    
-                    
-    @catch_exceptions
-    def renameFile(self,index):
-        ''' Puts the selected file in rename mode '''
-        if index.isValid():
-            self.edit(index)
-            self.directory_model.dataChanged.connect(self.onFileRenamed)
-        else:
-            print('Invalid index in renameFile')
         
+        
+    @catch_exceptions
+    def createNewFolder(self):
+        current_dir = self.getCurrentDirectoryPath()
+        random_folder_name = 'new_folder' + str(random.randint(1,1000))
+        full_path = os.path.join(current_dir, random_folder_name)
+        
+        try:
+            os.makedirs(full_path)
+        except PermissionError:
+            QMessageBox.critical(self, "Error", f"Permission denied: Unable to create folder '{full_path}'.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to create folder: {str(e)}")
+            
+        self.renameFile(self.directory_model.index(full_path))
         
     @catch_exceptions
     def onFileRenamed(self, topLeft, bottomRight):
@@ -233,49 +244,6 @@ class FileListViewer(QListView):
                 self.directory_model.setData(index, os.path.basename(old_path), Qt.EditRole)  # Reset to old name
          
                 QMessageBox.warning(self, "Warning", "Invalid file name or name already exists.")
-    
-    @catch_exceptions
-    def propertiesFile(self,index):
-        if not index.isValid():
-            return
-        
-        file_path = self.directory_model.filePath(index)
-        
-        # Retrieve properties
-        properties = {
-            "File Name": self.directory_model.fileName(index),
-            "Size": f"{os.path.getsize(file_path)} bytes",
-            "Date Modified": time.ctime(os.path.getmtime(file_path)),
-            "Type": self.directory_model.type(index)
-        }
-        
-        dialog = PropertiesDialog("File Properties", properties)
-        dialog.exec()
-    
-    # Folder operations
-    @catch_exceptions
-    def createNewFolder(self):
-        current_dir = self.getCurrentDirectoryPath()
-        random_folder_name = 'new_folder' + str(random.randint(1,1000))
-        full_path = os.path.join(current_dir, random_folder_name)
-        
-        try:
-            os.makedirs(full_path)
-            self.refreshView()
-        except PermissionError:
-            QMessageBox.critical(self, "Error", f"Permission denied: Unable to create folder '{full_path}'.")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to create folder: {str(e)}")
-        
-    
-    
-    def renameFolder(self,index):
-        ''' Puts the selected folder in rename mode '''
-        if index.isValid():
-            self.edit(index)  # Enable inline editing for the folder
-        else:
-            print('Invalid index in renameFolder')
-
 
     @catch_exceptions
     def onFolderRenamed(self, topLeft, bottomRight):
@@ -293,7 +261,44 @@ class FileListViewer(QListView):
             else:
                 # Revert the change if the name is not valid
                 self.directory_model.setData(index, os.path.basename(old_path), Qt.EditRole)
+
+    def renameFolder(self,index):
+        ''' Puts the selected folder in rename mode '''
+        if index.isValid():
+            self.edit(index)
+            self.directory_model.dataChanged.connect(self.onFolderRenamed)
+        else:
+            print('Invalid index in renameFolder')
     
+    @catch_exceptions
+    def renameFile(self,index):
+        ''' Puts the selected file in rename mode '''
+        if index.isValid():
+            self.edit(index)
+            self.directory_model.dataChanged.connect(self.onFileRenamed)
+        else:
+            print('Invalid index in renameFile')
+            
+            
+    @catch_exceptions
+    def propertiesFile(self,index):
+        if not index.isValid():
+            return
+        
+        file_path = self.directory_model.filePath(index)
+        
+        # Retrieve properties
+        properties = {
+            "File Name": self.directory_model.fileName(index),
+            "Size": f"{os.path.getsize(file_path)} bytes",
+            "Date Modified": time.ctime(os.path.getmtime(file_path)),
+            "Type": self.directory_model.type(index)
+        }
+        
+        dialog = PropertiesDialog("File Properties", properties)
+        dialog.exec()
+        
+        
     @catch_exceptions
     def propertiesFolder(self,index):
         if not index.isValid():
@@ -324,8 +329,12 @@ class FileListViewer(QListView):
         self.paste_signal.emit(self.getCurrentDirectoryPath())
     
     @catch_exceptions
-    def openInTerminal(self):
-        current_dir = self.getCurrentDirectoryPath()  # Get the current directory path
+    def openInTerminal(self , pwd = None):
+        if pwd is None:
+            current_dir = self.getCurrentDirectoryPath()  # Get the current directory path
+        else:
+            current_dir = pwd
+            
         if not current_dir:
             print("No valid current directory to open in terminal.")
             return
@@ -339,7 +348,7 @@ class FileListViewer(QListView):
                 subprocess.Popen(['open', '-a', 'Terminal', current_dir])
             elif platform.system() == "Linux":  # Linux
                 # Use 'xdg-terminal' or 'gnome-terminal' or any terminal available
-                subprocess.Popen(['gnome-terminal', '--working-directory', current_dir])
+                subprocess.Popen(['alacritty', '--working-directory', current_dir])
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open terminal: {str(e)}")
 

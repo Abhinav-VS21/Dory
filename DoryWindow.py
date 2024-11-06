@@ -143,7 +143,13 @@ class DoryWindow(QMainWindow):
         self.menu_bar.add_current_dir_bookmark_signal.connect(lambda : self.bookmark_tree.addBookmark(self.current_dir , os.path.basename(self.current_dir) ))
         self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createNewFile())
         self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createNewFolder())
+        self.menu_bar.open_dir_properties.connect(lambda : self.file_viewer.currDirProperties())
     
+    def searchConnections(self):
+        self.search_input.search_conditions_signal.connect(lambda condition_dict: self.runSearchTherad(condition_dict))
+        self.search_result.path_double_clicked.connect(lambda path: self.openInFileView(path))
+        
+        
     # defining actions and slots
     @catch_exceptions
     def updateRootIndexWithTraversal(self , folder_path : str):
@@ -283,7 +289,13 @@ class DoryWindow(QMainWindow):
         """Switches the file viewer to list view."""
         self.file_viewer.setListView()
         
-    
+    @catch_exceptions
+    def runSearchTherad(self , condition_dict):
+        """Runs the search thread with the given conditions."""
+        search_thread = SearchThread(condition_dict)
+        search_thread.start()
+        search_thread.search_result.connect(lambda result : self.search_result.updateSearchResult(result))
+        search_thread.finished.connect(lambda : self.search_result.setVisible(True))
     
 # Running Application
 if __name__ == "__main__":
