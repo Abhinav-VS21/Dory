@@ -86,7 +86,7 @@ class FileListViewer(QListView):
                 bookmark_action.triggered.connect(lambda: self.add_bookmark_path.emit((self.directory_model.filePath(index), self.directory_model.fileName(index))))
                 cut_folder_action.triggered.connect(lambda: self.cut_folder_signal.emit(self.directory_model.filePath(index)))
                 copy_folder_action.triggered.connect(lambda: self.copy_folder_signal.emit(self.directory_model.filePath(index)))
-                delete_folder_action.triggered.connect(lambda: self.directory_model.rmdir(index))
+                delete_folder_action.triggered.connect(lambda: self.directory_model.rmdir(index)) # doesnt work
                 rename_folder_action.triggered.connect(lambda: self.renameFolder(index))
                 properties_folder_action.triggered.connect(lambda: self.propertiesFolder(index))
                 open_folder_in_terminal_action.triggered.connect(lambda: self.openInTerminal(self.directory_model.filePath(index)))
@@ -401,7 +401,33 @@ class FileListViewer(QListView):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to retrieve folder properties: {str(e)}")
 
+    @catch_exceptions
+    def deleteRecursively(self,index):
+        path = self.directory_model.filePath(index)
+        
+        reply = QMessageBox.question(
+                self,
+                "Confirm Deletion",
+                f"Are you sure you want to delete '{path}' and all its contents?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No
+            )
+        if reply == QMessageBox.No:
+            print("Deletion cancelled.")
+            return
+        
+        if not os.path.exists(path):
+            print("Invalid path in deleteRecursively")
+            return
     
+        for root , dirs , files in os.walk(path , topdown = False):
+            for name in files:
+                os.remove(os.path.join(root,name))
+            for name in dirs:
+                os.rmdir(os.path.join(root,name))
+        
+        os.rmdir(path)
+        
     
     
 class PropertiesDialog(QDialog):
@@ -422,3 +448,5 @@ class PropertiesDialog(QDialog):
         layout.addWidget(button)
 
         self.setLayout(layout)
+        
+    

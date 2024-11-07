@@ -14,6 +14,7 @@ import os
 import subprocess
 import platform
 import shutil
+import sys 
 
 class DoryWindow(QMainWindow):
     def __init__(self , init_root_dir : str = QDir.homePath() , current_dir : str = QDir.homePath()):
@@ -299,7 +300,7 @@ class DoryWindow(QMainWindow):
     
 # Running Application
 if __name__ == "__main__":
-    DoryApp = QApplication([])
-    window = DoryWindow()
+    DoryApp = QApplication()
+    window = DoryWindow(sys.argv)
     window.show()
     DoryApp.exec()
