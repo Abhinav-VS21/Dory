@@ -14,6 +14,7 @@ class DirectoryTree(QTreeView):
         self.dir_system_model = QFileSystemModel()
         self.dir_system_model.setRootPath(root_directory)
         
+        
         self.setModel(self.dir_system_model)
         self.setRootIndex(self.dir_system_model.index(root_directory))
         

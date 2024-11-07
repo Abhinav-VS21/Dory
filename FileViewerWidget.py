@@ -86,7 +86,7 @@ class FileListViewer(QListView):
                 bookmark_action.triggered.connect(lambda: self.add_bookmark_path.emit((self.directory_model.filePath(index), self.directory_model.fileName(index))))
                 cut_folder_action.triggered.connect(lambda: self.cut_folder_signal.emit(self.directory_model.filePath(index)))
                 copy_folder_action.triggered.connect(lambda: self.copy_folder_signal.emit(self.directory_model.filePath(index)))
-                delete_folder_action.triggered.connect(lambda: self.directory_model.rmdir(index)) # doesnt work
+                delete_folder_action.triggered.connect(lambda: self.deleteRecursively(index)) # doesnt work
                 rename_folder_action.triggered.connect(lambda: self.renameFolder(index))
                 properties_folder_action.triggered.connect(lambda: self.propertiesFolder(index))
                 open_folder_in_terminal_action.triggered.connect(lambda: self.openInTerminal(self.directory_model.filePath(index)))
@@ -348,7 +348,7 @@ class FileListViewer(QListView):
                 subprocess.Popen(['open', '-a', 'Terminal', current_dir])
             elif platform.system() == "Linux":  # Linux
                 # Use 'xdg-terminal' or 'gnome-terminal' or any terminal available
-                subprocess.Popen(['alacritty', '--working-directory', current_dir])
+                subprocess.Popen(['bash' , current_dir])
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open terminal: {str(e)}")
 

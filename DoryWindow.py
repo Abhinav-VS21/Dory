@@ -301,6 +301,6 @@ class DoryWindow(QMainWindow):
 # Running Application
 if __name__ == "__main__":
     DoryApp = QApplication()
-    window = DoryWindow(sys.argv)
+    window = DoryWindow()
     window.show()
     DoryApp.exec()
