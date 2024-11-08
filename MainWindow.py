@@ -6,7 +6,7 @@ from DirectoryTree import DirectoryTree
 from FileViewerWidget import FileListViewer
 from MenuBarWidget import MenuBar
 from SearchInputWidget import SearchInputWidget
-from SearchResultWidget import SearchResultWidget
+from FileTableView import FileTableView
 from SearchThread import SearchThread
 from StatusBarWidget import StatusBarWidget
 from catchExecptions import catch_exceptions
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.bookmark_tree          = BookmarkTree(bookmarks_file="bookmarks.json")
         self.file_viewer            = FileListViewer(root_directory=self.root_dir)
         self.search_input           = SearchInputWidget()
-        self.search_result          = SearchResultWidget()
+        self.search_result          = FileTableView()
         self.status_bar_widget      = StatusBarWidget()
         
         
@@ -343,7 +343,7 @@ class MainWindow(QMainWindow):
         search_thread = SearchThread(search_text , case_sensitive , recursive_search , full_match_search , self.getCurrentDirectoryPath())
 
         search_thread.searchFiles()
-        search_thread.list_of_file_items.connect(lambda items : self.search_result.setResults(items))
+        search_thread.list_of_file_items.connect(lambda items : self.search_result.updateResults(items))
         
         self.toggleSearchResults()
         

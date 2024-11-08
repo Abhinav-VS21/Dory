@@ -6,7 +6,7 @@ from DirectoryTree import DirectoryTree
 from FileViewerWidget import FileListViewer
 from MenuBarWidget import MenuBar
 from SearchInputWidget import SearchInputWidget
-from SearchResultWidget import SearchResultWidget
+from FileTableView import FileTableView
 from SearchThread import SearchThread
 from StatusBarWidget import StatusBarWidget
 from catchExecptions import catch_exceptions
@@ -33,6 +33,7 @@ class DoryWindow(QMainWindow):
         self.directoryConnections()
         self.bookmarkConnections()
         self.menubarConnections()
+        self.searchConnections()
         
     def initLayout(self):
         # Creating widgets
@@ -43,7 +44,7 @@ class DoryWindow(QMainWindow):
         self.bookmark_tree          = BookmarkTree(bookmarks_file="bookmarks.json")
         self.file_viewer            = FileListViewer(root_directory=self.init_root_dir)
         self.search_input           = SearchInputWidget()
-        self.search_result          = SearchResultWidget()
+        self.search_result          = FileTableView()
         self.status_bar_widget      = StatusBarWidget()
         
         
@@ -147,8 +148,8 @@ class DoryWindow(QMainWindow):
         self.menu_bar.open_dir_properties.connect(lambda : self.file_viewer.currDirProperties())
     
     def searchConnections(self):
-        self.search_input.search_conditions_signal.connect(lambda condition_dict: self.runSearchTherad(condition_dict))
-        self.search_result.path_double_clicked.connect(lambda path: self.openInFileView(path))
+        self.search_input.search_conditions_signal.connect(lambda condition_dict: self.runSearchThread(condition_dict))
+        self.search_result.path_double_clicked.connect(lambda path: self.updateRootIndexWithTraversal(path))
         
         
     # defining actions and slots
@@ -175,6 +176,7 @@ class DoryWindow(QMainWindow):
         """
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
+        self.file_viewer.setVisible(True)
         self.address_bar_widget.updatePlaceholder(folder_path)
         
     @catch_exceptions
@@ -291,12 +293,20 @@ class DoryWindow(QMainWindow):
         self.file_viewer.setListView()
         
     @catch_exceptions
-    def runSearchTherad(self , condition_dict):
+    def runSearchThread(self , condition_dict):
         """Runs the search thread with the given conditions."""
-        search_thread = SearchThread(condition_dict)
-        search_thread.start()
-        search_thread.search_result.connect(lambda result : self.search_result.updateSearchResult(result))
-        search_thread.finished.connect(lambda : self.search_result.setVisible(True))
+        print('running the search thread')
+        self.search_thread = SearchThread(condition_dict , self.current_dir)
+        self.search_thread.list_of_file_items.connect(lambda results : self.search_result.updateResults(results))
+        self.search_thread.finished.connect(lambda : self.openSearchResults() )
+        self.search_thread.start()
+        
+    
+    @catch_exceptions
+    def openSearchResults(self):
+        print('opening the search results ')
+        self.search_result.setVisible(True)
+        self.file_viewer.setVisible(False)
     
 # Running Application
 if __name__ == "__main__":
