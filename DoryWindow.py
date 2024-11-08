@@ -24,6 +24,10 @@ class DoryWindow(QMainWindow):
         self.setMinimumSize(800 , 600)
         self.init_root_dir = init_root_dir
         self.current_dir = current_dir
+        
+        # Creating Back Stack and Forward Stack
+        self.back_stack = []
+        self.forward_stack = []
 
         self.initLayout()
         self.initWindow()
@@ -34,6 +38,8 @@ class DoryWindow(QMainWindow):
         self.bookmarkConnections()
         self.menubarConnections()
         self.searchConnections()
+        self.addressBarConnections()
+        self.statusConnections()
         
     def initLayout(self):
         # Creating widgets
@@ -108,12 +114,21 @@ class DoryWindow(QMainWindow):
         
         
         # initializing the window 
-        self.updateRootIndexWithTraversal(self.current_dir)
+        self.updateRootIndexWithTraversal(self.current_dir , False , True)
         
         # Creating Clipboard
         self.clipboard = QApplication.clipboard()
         self.clipboard_mode = None
         
+        
+    def addressBarConnections(self):
+        self.address_bar_widget.go_up_signal.connect(lambda: self.updateRootIndexWithTraversal(os.path.dirname(self.current_dir)))
+        self.address_bar_widget.go_back_signal.connect(lambda: self.goBack())
+        self.address_bar_widget.go_forward_signal.connect(lambda: self.goForward())
+        self.address_bar_widget.run_search.connect(lambda: self.search_input.setVisible(not self.search_input.isVisible()))
+        self.address_bar_widget.to_icon_mode.connect(lambda: self.setIconView())
+        self.address_bar_widget.to_list_mode.connect(lambda: self.setListView())
+        self.address_bar_widget.address_path_changed.connect(lambda path: self.updateRootIndexWithTraversal(path))
         
     def fileConnections(self):
         self.file_viewer.open_folder.connect(lambda folder_path : self.updateRootIndexWithTraversal(folder_path))
@@ -127,7 +142,7 @@ class DoryWindow(QMainWindow):
         self.file_viewer.add_bookmark_path.connect(lambda path,name : self.bookmark_tree.addBookmark(path,name))
         
     def directoryConnections(self):
-        self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))
+        self.directory_tree.dir_double_clicked.connect(lambda folder_path : self.updateRootIndexWithTraversal(folder_path , True , False))
         # self.directory_tree.dir_right_clicked.connect(lambda folder_path : self.updateRootIndex(folder_path))  to be implemented
 
     def bookmarkConnections(self):
@@ -151,34 +166,45 @@ class DoryWindow(QMainWindow):
         self.search_input.search_conditions_signal.connect(lambda condition_dict: self.runSearchThread(condition_dict))
         self.search_result.path_double_clicked.connect(lambda path: self.updateRootIndexWithTraversal(path))
         
+    def statusConnections(self):
+        self.status_bar_widget.toggle_left_sidebar.connect(lambda : self.toggleBookmarkDirectory())
+        
         
     # defining actions and slots
     @catch_exceptions
-    def updateRootIndexWithTraversal(self , folder_path : str):
+    def updateRootIndexWithTraversal(self , folder_path : str , save_to_back_stack : bool = True , with_traversal : bool = True):
         """Updates the root index of the file viewer and traverses the directory tree."""
+        
+        if save_to_back_stack:
+            if (self.forward_stack) and self.forward_stack[-1] == folder_path:
+                print('going forward')
+                self.goForward()
+                return
+            else :
+                self.back_stack.append(self.current_dir)
+                self.forward_stack = []
+            
+        print('back stack: ' , self.back_stack)
+        print('forward stack: ' , self.forward_stack)
+        
+        
+        
         self.current_dir = folder_path
         self.file_viewer.updateRootIndex(folder_path)
-        self.directory_tree.traverseDirectoryTree(folder_path)
         self.address_bar_widget.updatePlaceholder(folder_path)
+        
+        if with_traversal:
+            self.directory_tree.traverseDirectoryTree(folder_path)
         
         
         # Show the directory tree and hide the bookmark tree
         self.directory_tree.setVisible(True)
+        self.file_viewer.setVisible(True)
         self.bookmark_tree.setVisible(False)
-        self.file_viewer.setVisible(True)
         self.search_result.setVisible(False)
+        self.search_input.setVisible(False)
     
-    @catch_exceptions
-    def updateRootIndex(self , folder_path):
-        """
-        On Double Clicking the Directory Tree
-        Updates the root index of the file viewer.
-        """
-        self.current_dir = folder_path
-        self.file_viewer.updateRootIndex(folder_path)
-        self.file_viewer.setVisible(True)
-        self.address_bar_widget.updatePlaceholder(folder_path)
-        
+
     @catch_exceptions
     def openNewWindow(self , folder_path):
         new_window = DoryWindow(init_root_dir=QDir.homePath() , current_dir=folder_path)
@@ -274,6 +300,11 @@ class DoryWindow(QMainWindow):
         """Toggles the bookmark tree visibility."""
         self.bookmark_tree.setVisible(not self.bookmark_tree.isVisible())
         self.directory_tree.setVisible(not self.directory_tree.isVisible())
+        
+    def hideBookmarkDirectory(self):
+        """Hides the bookmark tree."""
+        self.bookmark_tree.setVisible(False)
+        self.directory_tree.setVisible(False)
 
     @catch_exceptions
     def refreshView(self):
@@ -290,6 +321,7 @@ class DoryWindow(QMainWindow):
     @catch_exceptions
     def setListView(self):
         """Switches the file viewer to list view."""
+        print('setting the list view')
         self.file_viewer.setListView()
         
     @catch_exceptions
@@ -307,6 +339,26 @@ class DoryWindow(QMainWindow):
         print('opening the search results ')
         self.search_result.setVisible(True)
         self.file_viewer.setVisible(False)
+        
+    def goBack(self):
+        """Goes back in the directory history."""
+        
+        if not self.back_stack:
+            print("Back stack is empty")
+            return
+        
+        self.forward_stack.append(self.current_dir)
+        self.updateRootIndexWithTraversal(self.back_stack.pop() , False)
+        
+    def goForward(self):
+        """Goes forward in the directory history."""
+        
+        if not self.forward_stack:
+            print("Forward stack is empty")
+            return
+        
+        self.back_stack.append(self.current_dir)
+        self.updateRootIndexWithTraversal(self.forward_stack.pop() , False)
     
 # Running Application
 if __name__ == "__main__":

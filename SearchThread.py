@@ -60,7 +60,7 @@ class SearchThread(QThread):
                     
                     
                     # create a tuple of the file item
-                    file_tuple = ( filename , file_path , file_size , file_type , last_modified)    
+                    file_tuple = (filename , file_path , file_size , file_type , last_modified)    
                     
                     results.append(file_tuple)
           

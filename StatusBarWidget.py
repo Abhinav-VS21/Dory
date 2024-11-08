@@ -6,7 +6,6 @@ class StatusBarWidget(QWidget):
     # Signals
     icon_size       = Signal(int)  
     toggle_left_sidebar = Signal()
-    hide_left_sidebar    = Signal()
     
     @catch_exceptions
     def __init__(self, parent=None):
@@ -17,7 +16,6 @@ class StatusBarWidget(QWidget):
 
         # Create buttons
         self.toggle_bookmark_button = QPushButton("Toggle Bookmark/TreeView")
-        self.hide_sidebar_button = QPushButton("Hide Sidebar")
 
         # Create a label to show status messages
         self.status_label = QLabel("Ready")  # Default status message
@@ -31,7 +29,6 @@ class StatusBarWidget(QWidget):
 
         # Add widgets to the layout
         layout.addWidget(self.toggle_bookmark_button)
-        layout.addWidget(self.hide_sidebar_button)
         layout.addStretch()  # Add stretchable space between buttons and label
         layout.addWidget(self.status_label)  # Center label
         layout.addStretch()  # Add stretchable space between label and slider
@@ -42,7 +39,6 @@ class StatusBarWidget(QWidget):
 
         # Connect signals to slots
         self.toggle_bookmark_button.clicked.connect(self.toggle_left_sidebar.emit)
-        self.hide_sidebar_button.clicked.connect(self.hide_left_sidebar.emit)
         self.icon_size_slider.valueChanged.connect(self.icon_size.emit)
         
         

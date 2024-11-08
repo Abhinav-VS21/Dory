@@ -43,9 +43,15 @@ class FileListViewer(QListView):
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.SelectedClicked)
 
         
-        
         # Defining connections
         self.doubleClicked.connect(self.onDoubleClicked)
+        
+        # Initialize settings
+        self.initSettings()
+        
+    @catch_exceptions
+    def initSettings(self):
+        self.setIconView()
         
     # Defining the slots
     @catch_exceptions
@@ -153,7 +159,7 @@ class FileListViewer(QListView):
     @catch_exceptions
     def setIconView(self):
         self.setViewMode(QListView.IconMode)
-        self.setGridSize(QSize(70,70))
+        self.setGridSize(QSize(100,100))
         self.setResizeMode(QListView.Adjust)
         self.setFlow(QListView.LeftToRight)
         
