@@ -6,7 +6,7 @@ from DirectoryTree import DirectoryTree
 from FileViewerWidget import FileListViewer
 from MenuBarWidget import MenuBar
 from SearchInputWidget import SearchInputWidget
-from SearchResultWidget import SearchResultWidget
+from FileTableView import FileTableView
 from SearchThread import SearchThread
 from StatusBarWidget import StatusBarWidget
 from catchExecptions import catch_exceptions
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.bookmark_tree          = BookmarkTree(bookmarks_file="bookmarks.json")
         self.file_viewer            = FileListViewer(root_directory=self.root_dir)
         self.search_input           = SearchInputWidget()
-        self.search_result          = SearchResultWidget()
+        self.search_result          = FileTableView()
         self.status_bar_widget      = StatusBarWidget()
         
         
@@ -132,9 +132,9 @@ class MainWindow(QMainWindow):
         self.menu_bar.change_directory.connect(lambda path : self.setRootIndexWithTraversal(path))
         self.menu_bar.run_search_widget.connect(lambda : self.triggerInputSearch())
         self.menu_bar.add_current_dir_bookmark_signal.connect(lambda : self.addCurrentDirBookmark())
-        self.menu_bar.toggle_bookmark.connect(lambda : self.toogleLeftSidebar())
-        self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createFile())
-        self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createFolder())
+        self.menu_bar.open_bookmark.connect(lambda : self.toogleLeftSidebar())
+        self.menu_bar.create_new_file.connect(lambda : self.file_viewer.createNewFile())
+        self.menu_bar.create_new_folder.connect(lambda : self.file_viewer.createNewFolder())
         self.menu_bar.open_dir_properties.connect(lambda : self.file_viewer.currDirProperties())
         
         
@@ -193,7 +193,7 @@ class MainWindow(QMainWindow):
             self.forward_stack.clear()
 
         # Set the new root index in both the file viewer and directory tree
-        self.file_viewer.setNewRootIndex(path)
+        self.file_viewer.updateRootIndex(path)
         self.directory_tree.traverseDirectoryPath(path)
         
     def setRootIndexWithNoTraversal(self,path:str):
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
             self.forward_stack.clear()
 
         # Set the new root index in both the file viewer and directory tree
-        self.file_viewer.setNewRootIndex(path)
+        self.file_viewer.updateRootIndex(path)
         
         
         
@@ -343,7 +343,7 @@ class MainWindow(QMainWindow):
         search_thread = SearchThread(search_text , case_sensitive , recursive_search , full_match_search , self.getCurrentDirectoryPath())
 
         search_thread.searchFiles()
-        search_thread.list_of_file_items.connect(lambda items : self.search_result.setResults(items))
+        search_thread.list_of_file_items.connect(lambda items : self.search_result.updateResults(items))
         
         self.toggleSearchResults()
         

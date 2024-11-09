@@ -14,6 +14,7 @@ class DirectoryTree(QTreeView):
         self.dir_system_model = QFileSystemModel()
         self.dir_system_model.setRootPath(root_directory)
         
+        
         self.setModel(self.dir_system_model)
         self.setRootIndex(self.dir_system_model.index(root_directory))
         
@@ -45,12 +46,11 @@ class DirectoryTree(QTreeView):
         Args:
             directory (str): The path to the directory to expand to.
         """
+        
         root_path = QDir(self.dir_system_model.rootPath())
-        print('root_path:', root_path.absolutePath())
-        print('directory:', directory)
 
         relative_path = root_path.relativeFilePath(directory)
-        print('relative_path:', relative_path)
+        
 
         traversal = []
 
@@ -62,8 +62,6 @@ class DirectoryTree(QTreeView):
             if part:  
                 current_path.cd(part)  
                 traversal.append(current_path.absolutePath())  
-
-        print('traversal:', traversal)
 
         for path in traversal:
             index = self.dir_system_model.index(path)
@@ -78,12 +76,6 @@ class DirectoryTree(QTreeView):
         print('emits signal:', dir_path)
     
     #Slots
-    @catch_exceptions
-    def traverseDirectoryPath(self, path):
-        """traverses the directory given in string."""
-        
-        index = self.dir_system_model.index(path)
-        self.traverseDirectoryTree(path)
     
     @catch_exceptions    
     def hideSelf(self):

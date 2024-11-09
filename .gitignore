@@ -1,4 +1,5 @@
 .venv/
-__pyCache__/
+__pycache__
+*.pyc
 temp*
 debug.py

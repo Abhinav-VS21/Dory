@@ -21,8 +21,16 @@ class SearchInputWidget(QWidget):
         btn_list = [self.case_sensitive, self.recursive_search, self.full_match_search]
         for btn in btn_list:
             btn.setCheckable(True)
-            btn.toggled.connect(self.update_conditions)  # Connect to update method
+            
+        self.case_sensitive.toggled.connect(lambda :self.updateConditions())  # Connect to update method
+        self.recursive_search.toggled.connect(lambda :self.updateConditions())
+        self.full_match_search.toggled.connect(lambda :self.updateConditions())
         
+        # Making button tooltip
+        self.search_button.setToolTip("Run Search")
+        self.case_sensitive.setToolTip("toggle case-sensitive search")
+        self.recursive_search.setToolTip("search-recursively")
+        self.full_match_search.setToolTip('full-match-search')
         # Adding icons to the buttons
         self.search_button.setIcon(QIcon("icons/search.svg"))
         self.case_sensitive.setIcon(QIcon("icons/type.svg"))
@@ -52,14 +60,15 @@ class SearchInputWidget(QWidget):
         # Get the current search text and update conditions
         search_text = self.search_input.text()
         self.search_conditions['search_text'] = search_text
-        self.update_conditions()
+        self.updateConditions()
         
         # Emit the search conditions signal
+        print('emiting the self.search_conditions')
         self.search_conditions_signal.emit(self.search_conditions)
 
 
     @catch_exceptions
-    def update_conditions(self):
+    def updateConditions(self):
         # Update the search conditions based on the button states
         self.search_conditions['case_sensitive'] = self.case_sensitive.isChecked()
         self.search_conditions['recursive_search'] = self.recursive_search.isChecked()

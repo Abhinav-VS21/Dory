@@ -12,7 +12,7 @@ class MenuBar(QMenuBar):
     change_directory                = Signal(str)   
     run_search_widget               = Signal()
     add_current_dir_bookmark_signal = Signal()
-    toggle_bookmark                 = Signal()      
+    open_bookmark                   = Signal()      
     create_new_file                 = Signal()
     create_new_folder               = Signal()
     open_dir_properties             = Signal()
@@ -85,13 +85,13 @@ class MenuBar(QMenuBar):
     def setup_bookmarks_menu(self):
         bookmarks_menu = self.addMenu("Bookmarks")
         add_bookmark = QAction("Add Bookmark", self)
-        toggle_bookmark = QAction("Edit Bookmark", self)
+        open_bookmark = QAction("Edit Bookmark", self)
         
-        bookmarks_menu.addActions([add_bookmark, toggle_bookmark])
+        bookmarks_menu.addActions([add_bookmark, open_bookmark])
         
         # Connect actions to signals
         add_bookmark.triggered.connect(self.add_current_dir_bookmark_signal)
-        toggle_bookmark.triggered.connect(self.toggle_bookmark)
+        open_bookmark.triggered.connect(self.open_bookmark)
     
     
     @catch_exceptions

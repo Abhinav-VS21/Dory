@@ -16,9 +16,9 @@ class DirectoryCompleter:
 
         
     @catch_exceptions
-    def updateCompleter(self):
+    def updateCompleter(self , updatedString:str):
         # Get the current text from the QLineEdit
-        current_text = self.line_edit.text()
+        current_text = updatedString
 
         # Determine the directory path to complete
         if current_text:
