@@ -361,8 +361,11 @@ class DoryWindow(QMainWindow):
         self.updateRootIndexWithTraversal(self.forward_stack.pop() , False)
     
 # Running Application
-if __name__ == "__main__":
+def main():
     DoryApp = QApplication()
     window = DoryWindow()
     window.show()
     DoryApp.exec()
+    
+if __name__ == "__main__":
+    main()
