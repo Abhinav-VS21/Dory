@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Dory"
+version = "0.1"
+description = "A File Manager with focus on simplicity and ease of use."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Abhinav Vs", email = "abhinav21221@gmail.com"}]
+requires-python = ">=3.7"
+
+[project.dependencies]
+PySide6 = "*"
