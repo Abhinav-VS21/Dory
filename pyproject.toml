@@ -12,6 +12,6 @@ dependencies = [
 # Optional metadata about your project
 description = "A short description of your project"
 authors = [
-    { name = "Your Name", email = "youremail@example.com" }
+    { name = "MrShah_21", email = "abhinav2122@gmail.com" }
 ]
-license = "MIT"  # or whatever license you're using
+
