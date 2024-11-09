@@ -42,6 +42,8 @@ class FileListViewer(QListView):
         self.setRootIndex(self.directory_model.index(root_directory))
         self.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.SelectedClicked)
 
+        # Persistent context menu action 
+        self.show_hidden_files_action = QAction("Show Hidden Files", self , checkable = True)
         
         # Defining connections
         self.doubleClicked.connect(self.onDoubleClicked)
@@ -71,6 +73,7 @@ class FileListViewer(QListView):
         menu = QMenu(self)
         
         if index.isValid():
+            print('double click on file or folder')
             if self.directory_model.isDir(index):
                 # Context Menu for a folder
                 open_folder_action = QAction("Open", self)
@@ -105,7 +108,6 @@ class FileListViewer(QListView):
                 rename_file_action = QAction("Rename", self)
                 delete_file_action = QAction("Delete", self)
                 properties_file_action = QAction("Properties", self)
-                open_file_in_terminal_action = QAction("Open in Terminal", self)
                 
                 menu.addActions([open_file_action, cut_file_action, copy_file_action, 
                                  rename_file_action, delete_file_action,
@@ -118,24 +120,24 @@ class FileListViewer(QListView):
                 delete_file_action.triggered.connect(lambda: self.directory_model.remove(index))
                 properties_file_action.triggered.connect(lambda: self.propertiesFile(index))
         else:
+            print('double click on empty space')
             
             # Context Menu for the empty space
             paste_action = QAction("Paste", self)
             create_file_action = QAction("Create File", self)
             create_folder_action = QAction("Create Folder", self)
             open_in_terminal_action = QAction("Open in Terminal", self)
-            show_hidden_files_action = QAction("Show Hidden Files", self , checkable = True)
             curr_dir_properties_action = QAction("Properties", self)
             
             menu.addActions([paste_action, create_file_action, create_folder_action, 
-                             open_in_terminal_action, show_hidden_files_action, 
+                             open_in_terminal_action, self.show_hidden_files_action, 
                              curr_dir_properties_action])
             
             paste_action.triggered.connect(self.paste)
             create_file_action.triggered.connect(lambda: self.createNewFile())
             create_folder_action.triggered.connect(lambda: self.createNewFolder())
             open_in_terminal_action.triggered.connect(lambda: self.openInTerminal())
-            show_hidden_files_action.triggered.connect(lambda: self.showHiddenFiles())
+            self.show_hidden_files_action.triggered.connect(lambda bool: self.directory_model.toggleHiddenFiles(bool))
             curr_dir_properties_action.triggered.connect(lambda: self.currDirProperties())
             
         # Show the context menu at the cursor position
@@ -345,6 +347,7 @@ class FileListViewer(QListView):
             print("No valid current directory to open in terminal.")
             return
 
+        print('Opening terminal in:', current_dir)
         try:
             if platform.system() == "Windows":  # Windows
                 # Use 'start' to open the command prompt in the specified directory
@@ -354,25 +357,10 @@ class FileListViewer(QListView):
                 subprocess.Popen(['open', '-a', 'Terminal', current_dir])
             elif platform.system() == "Linux":  # Linux
                 # Use 'xdg-terminal' or 'gnome-terminal' or any terminal available
-                subprocess.Popen(['bash' , current_dir])
+                subprocess.Popen(['alacritty' , '--working-directory',  current_dir])
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open terminal: {str(e)}")
 
-
-    @catch_exceptions
-    def showHiddenFiles(self):
-        """Toggles the visibility of hidden files in the file list."""
-        # Update the state
-        self.showing_hidden_files = not self.showing_hidden_files
-        
-        # Set the filter to include/exclude hidden files based on the state
-        if self.showing_hidden_files:
-            self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
-        else:
-            self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs | QDir.Hidden)
-        
-        # Refresh the view to reflect the changes
-        self.refreshView()
 
     @catch_exceptions
     def updateRootIndex(self, directory: str):
@@ -386,16 +374,12 @@ class FileListViewer(QListView):
     
     @catch_exceptions
     def currDirProperties(self):
-        index = self.currentIndex()
-        if not index.isValid():
-            return
-        
-        folder_path = self.directory_model.filePath(index)
+        folder_path =  self.getCurrentDirectoryPath()
         
         # Retrieve properties
         try:
             properties = {
-                "Folder Name": self.directory_model.fileName(index),
+                "Folder Name": os.path.basename(folder_path),
                 "Number of Files": str(len(os.listdir(folder_path))),
                 "Date Modified": time.ctime(os.path.getmtime(folder_path)),
                 "Type": "Folder"
