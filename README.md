@@ -1,1 +1,96 @@
-# Project Name\n\nA brief description of your project.\n\n## Requirements\n\nBefore you install and run this project, make sure you have the following installed on your system:\n\n- **Python** (version 3.7 or later)\n- **pip** (Python\'s package manager)\n- **Python dependencies** specified in `pyproject.toml`.\n\n## Installation\n\n### 1. Clone the repository\n\nFirst, clone the repository to your local machine:\n\n```bash\ngit clone https://github.com/yourusername/yourproject.git\ncd yourproject\n```\n\n### 2. Create and activate a virtual environment (optional, but recommended)\n\nIt’s a good practice to use a virtual environment to avoid conflicts with other projects.\n\n```bash\npython -m venv venv\nsource venv/bin/activate  # On Windows use `venv\\Scripts\\activate`\n```\n\n### 3. Install the required dependencies\n\nOnce the virtual environment is activated, you can install the required dependencies. Since you\'re using `pyproject.toml` for packaging, use `pip` to install the dependencies:\n\n```bash\npip install .\n```\n\nAlternatively, you can use `pip` to install the dependencies directly from the `pyproject.toml` file:\n\n```bash\npip install -r requirements.txt  # if you have a requirements.txt file, otherwise install manually as below\n```\n\n### 4. Install the system dependencies (for some features)\n\nIn case your project uses specific libraries that need to be installed outside Python (like `Pillow` for image handling), make sure you have them installed. For example, `Pillow` might require some system libraries:\n\n- On **Ubuntu** or **Debian**-based systems:\n\n  ```bash\n  sudo apt-get install libjpeg-dev zlib1g-dev\n  ```\n\n- On **Windows** or **macOS**, the installation of `Pillow` will handle it automatically.\n\n### 5. Run the application\n\nTo run the application, execute the following command:\n\n```bash\npython -m yourproject\n```\n\nThis will start the main window of the application. You should see your file explorer with the various features you\'ve implemented.\n\n---\n\n## How to Develop\n\n1. **Clone the repository** and create a virtual environment as shown above.\n2. **Make changes** to the Python files as necessary.\n3. **Test your changes** locally by running the application (`python -m yourproject`).\n4. **Push your changes** to the repository if you\'re using version control.\n\n---\n\n## Troubleshooting\n\nIf you run into any issues, consider the following:\n\n- Ensure you have the correct Python version (`python --version`).\n- Make sure all dependencies are installed by checking your virtual environment or system setup.\n- For any missing or incompatible libraries, try updating `pip` with:\n\n  ```bash\n  pip install --upgrade pip\n  ```\n\n---\n\n## License\n\nInclude information about the license you\'re using for this project.\n
+# Project Name
+
+A brief description of your project.
+
+## Requirements
+
+Before you install and run this project, make sure you have the following installed on your system:
+
+- **Python** (version 3.7 or later)
+- **pip** (Python's package manager)
+- **Python dependencies** specified in `pyproject.toml`.
+
+## Installation
+
+### 1. Clone the repository
+
+First, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/yourusername/yourproject.git
+cd yourproject
+```
+
+### 2. Create and activate a virtual environment (optional, but recommended)
+
+It’s a good practice to use a virtual environment to avoid conflicts with other projects.
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+```
+
+### 3. Install the required dependencies
+
+Once the virtual environment is activated, you can install the required dependencies. Since you're using `pyproject.toml` for packaging, use `pip` to install the dependencies:
+
+```bash
+pip install .
+```
+
+Alternatively, you can use `pip` to install the dependencies directly from the `pyproject.toml` file:
+
+```bash
+pip install -r requirements.txt  # if you have a requirements.txt file, otherwise install manually as below
+```
+
+### 4. Install the system dependencies (for some features)
+
+In case your project uses specific libraries that need to be installed outside Python (like `Pillow` for image handling), make sure you have them installed. For example, `Pillow` might require some system libraries:
+
+- On **Ubuntu** or **Debian**-based systems:
+
+  ```bash
+  sudo apt-get install libjpeg-dev zlib1g-dev
+  ```
+
+- On **Windows** or **macOS**, the installation of `Pillow` will handle it automatically.
+
+### 5. Run the application
+
+To run the application, execute the following command:
+
+```bash
+python -m yourproject
+```
+
+This will start the main window of the application. You should see your file explorer with the various features you've implemented.
+
+---
+
+## How to Develop
+
+1. **Clone the repository** and create a virtual environment as shown above.
+2. **Make changes** to the Python files as necessary.
+3. **Test your changes** locally by running the application (`python -m yourproject`).
+4. **Push your changes** to the repository if you're using version control.
+
+---
+
+## Troubleshooting
+
+If you run into any issues, consider the following:
+
+- Ensure you have the correct Python version (`python --version`).
+- Make sure all dependencies are installed by checking your virtual environment or system setup.
+- For any missing or incompatible libraries, try updating `pip` with:
+
+  ```bash
+  pip install --upgrade pip
+  ```
+
+---
+
+## License
+
+Include information about the license you're using for this project.
