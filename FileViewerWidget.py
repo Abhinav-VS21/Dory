@@ -9,7 +9,7 @@ from editableFileSystemModel import EditableFileSystemModel
 import os
 import random
 import time
-import sys
+import shutil
 import subprocess
 import platform
 
@@ -346,6 +346,15 @@ class FileListViewer(QListView):
         if not current_dir:
             print("No valid current directory to open in terminal.")
             return
+        
+        linux_terminals = {
+        'gnome-terminal': '--working-directory',
+        'konsole': '--workdir',
+        'alacritty': '--working-directory',
+        'xfce4-terminal': '--working-directory',
+        'lxterminal': '--working-directory',
+        'terminator': '--working-directory'
+}
 
         print('Opening terminal in:', current_dir)
         try:
@@ -356,8 +365,10 @@ class FileListViewer(QListView):
                 # Use 'open' with 'Terminal' to open the terminal in the specified directory
                 subprocess.Popen(['open', '-a', 'Terminal', current_dir])
             elif platform.system() == "Linux":  # Linux
-                # Use 'xdg-terminal' or 'gnome-terminal' or any terminal available
-                subprocess.Popen(['alacritty' , '--working-directory',  current_dir])
+                for terminal , flag  in linux_terminals.items():
+                    if shutil.which(terminal):
+                        subprocess.Popen([terminal, flag, current_dir])
+                        break
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to open terminal: {str(e)}")
 
