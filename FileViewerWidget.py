@@ -36,6 +36,8 @@ class FileListViewer(QListView):
         self.directory_model = EditableFileSystemModel()
         self.directory_model.setRootPath(root_directory)
         self.directory_model.setFilter(QDir.Files | QDir.NoDotAndDotDot | QDir.AllDirs)
+        self.reverse_order_action = QAction("Reverse Order", self, checkable=True)
+        
         
         # Setting up the file list view
         self.setModel(self.directory_model)
@@ -44,6 +46,7 @@ class FileListViewer(QListView):
 
         # Persistent context menu action 
         self.show_hidden_files_action = QAction("Show Hidden Files", self , checkable = True)
+        self.current_size = 70
         
         # Defining connections
         self.doubleClicked.connect(self.onDoubleClicked)
@@ -119,6 +122,7 @@ class FileListViewer(QListView):
                 rename_file_action.triggered.connect(lambda: self.renameFile(index))
                 delete_file_action.triggered.connect(lambda: self.directory_model.remove(index))
                 properties_file_action.triggered.connect(lambda: self.propertiesFile(index))
+                
         else:
             print('double click on empty space')
             
@@ -128,17 +132,28 @@ class FileListViewer(QListView):
             create_folder_action = QAction("Create Folder", self)
             open_in_terminal_action = QAction("Open in Terminal", self)
             curr_dir_properties_action = QAction("Properties", self)
+            sort_by_menu = menu.addMenu("Sort By")
+            sort_by_name_action = QAction("Name", self)
+            sort_by_size_action = QAction("Size", self)
+            sort_by_date_action = QAction("Date Modified", self)
             
+            
+            sort_by_menu.addActions([sort_by_name_action, sort_by_size_action, sort_by_date_action , self.reverse_order_action])
+
             menu.addActions([paste_action, create_file_action, create_folder_action, 
                              open_in_terminal_action, self.show_hidden_files_action, 
                              curr_dir_properties_action])
             
-            paste_action.triggered.connect(self.paste)
+            paste_action.triggered.connect(lambda : self.paste())
             create_file_action.triggered.connect(lambda: self.createNewFile())
             create_folder_action.triggered.connect(lambda: self.createNewFolder())
             open_in_terminal_action.triggered.connect(lambda: self.openInTerminal())
             self.show_hidden_files_action.triggered.connect(lambda bool: self.directory_model.toggleHiddenFiles(bool))
             curr_dir_properties_action.triggered.connect(lambda: self.currDirProperties())
+            sort_by_name_action.triggered.connect(lambda: self.sortBy(0))
+            sort_by_size_action.triggered.connect(lambda: self.sortBy(1))
+            sort_by_date_action.triggered.connect(lambda: self.sortBy(3))
+            self.reverse_order_action.triggered.connect(lambda: self.sortBy(0, True))
             
         # Show the context menu at the cursor position
         menu.exec(event.globalPos())
@@ -161,23 +176,29 @@ class FileListViewer(QListView):
     @catch_exceptions
     def setIconView(self):
         self.setViewMode(QListView.IconMode)
-        self.setGridSize(QSize(100,100))
+        self.setIconSize(QSize(self.current_size , self.current_size))
+        self.setGridSize(QSize(self.current_size + 30 ,self.current_size + 30))
         self.setResizeMode(QListView.Adjust)
         self.setFlow(QListView.LeftToRight)
         
     @catch_exceptions
     def setListView(self):
         self.setViewMode(QListView.ListMode)
+        self.setIconSize(QSize(30,30))
         self.setGridSize(QSize())
         self.setResizeMode(QListView.Adjust)
         self.setWordWrap(True)
         self.setFlow(QListView.TopToBottom)
           
+        self.current_size = 30
     @catch_exceptions
     def changeIconSize(self,size:int):
         """Change icon size in QListView if in IconMode."""
+        print('Changing icon size to:', size)
+        self.current_size = size
         if self.viewMode() == QListView.IconMode :
             self.setIconSize(QSize(size,size))
+            self.setGridSize(QSize(size + 30 , size + 30))
                 
     @catch_exceptions
     def getCurrentDirectoryPath(self):
@@ -429,6 +450,14 @@ class FileListViewer(QListView):
         
         os.rmdir(path)
         
+    @catch_exceptions
+    def sortBy(self , column , reverse = False):
+        if reverse:
+            order = Qt.AscendingOrder
+        else:
+            order = Qt.DescendingOrder
+            
+        self.directory_model.sort(column , order)
     
     
 class PropertiesDialog(QDialog):

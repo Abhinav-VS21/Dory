@@ -14,7 +14,6 @@ import os
 import subprocess
 import platform
 import shutil
-import sys 
 
 class DoryWindow(QMainWindow):
     def __init__(self , init_root_dir : str = QDir.homePath() , current_dir : str = QDir.homePath()):
@@ -168,6 +167,7 @@ class DoryWindow(QMainWindow):
         
     def statusConnections(self):
         self.status_bar_widget.toggle_left_sidebar.connect(lambda : self.toggleBookmarkDirectory())
+        self.status_bar_widget.icon_size.connect(lambda int : self.file_viewer.changeIconSize(int))
         
         
     # defining actions and slots
@@ -196,7 +196,7 @@ class DoryWindow(QMainWindow):
         if with_traversal:
             self.directory_tree.traverseDirectoryTree(folder_path)
         
-        
+        self.status_bar_widget.updateStatus(self.current_dir)
         # Show the directory tree and hide the bookmark tree
         self.directory_tree.setVisible(True)
         self.file_viewer.setVisible(True)
