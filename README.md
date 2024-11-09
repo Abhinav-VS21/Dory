@@ -1,6 +1,6 @@
-# Project Name
+# Dory
+A file Manager with a focus on programmers and minimilism
 
-A brief description of your project.
 
 ## Requirements
 
@@ -17,8 +17,8 @@ Before you install and run this project, make sure you have the following instal
 First, clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/yourusername/yourproject.git
-cd yourproject
+git clone https://github.com/Abhinav-VS21/Dory.git
+cd Dory
 ```
 
 ### 2. Create and activate a virtual environment (optional, but recommended)
@@ -44,19 +44,7 @@ Alternatively, you can use `pip` to install the dependencies directly from the `
 pip install -r requirements.txt  # if you have a requirements.txt file, otherwise install manually as below
 ```
 
-### 4. Install the system dependencies (for some features)
-
-In case your project uses specific libraries that need to be installed outside Python (like `Pillow` for image handling), make sure you have them installed. For example, `Pillow` might require some system libraries:
-
-- On **Ubuntu** or **Debian**-based systems:
-
-  ```bash
-  sudo apt-get install libjpeg-dev zlib1g-dev
-  ```
-
-- On **Windows** or **macOS**, the installation of `Pillow` will handle it automatically.
-
-### 5. Run the application
+### 4. Run the application
 
 To run the application, execute the following command:
 
@@ -74,6 +62,7 @@ This will start the main window of the application. You should see your file exp
 2. **Make changes** to the Python files as necessary.
 3. **Test your changes** locally by running the application (`python -m yourproject`).
 4. **Push your changes** to the repository if you're using version control.
+5. **Be Creative** :D
 
 ---
 
@@ -93,4 +82,4 @@ If you run into any issues, consider the following:
 
 ## License
 
-Include information about the license you're using for this project.
+its free, just give me a shoutout ~MrShah_21
