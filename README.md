@@ -49,7 +49,7 @@ pip install -r requirements.txt  # if you have a requirements.txt file, otherwis
 To run the application, execute the following command:
 
 ```bash
-python -m DoryWindows.py
+python -m DoryWindow
 ```
 
 This will start the main window of the application. You should see your file explorer with the various features you've implemented.
